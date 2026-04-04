@@ -601,5 +601,3 @@ If you find this project helpful, please:
 ---
 
 **🌟 Live Demo:** [https://crowdstudio.vercel.app](https://crowdstudio.vercel.app)
-
-
