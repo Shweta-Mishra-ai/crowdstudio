@@ -583,7 +583,7 @@ If you find this project helpful, please:
 
 ---
 
-**Made with ❤️ by [Shwetam77777](https://github.com/Shwetam77777)**
+**Made with ❤️ by [Shweta-Mishra-ai(https://github.com/Shweta-Mishra-ai)**
 
 **Last Updated:** January 21, 2026
 
