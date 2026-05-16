@@ -541,8 +541,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 Have questions or issues? 
 
-- **GitHub Issues:** [Open an issue](https://github.com/Shwetam77777/crowdstudio/issues)
-- **Email:** shwetam77777@gmail.com
+- **GitHub Issues:** [Open an issue](https://github.com/Shweta-Mishra-ai/crowdstudio/issues)
+- **Email:** shwetam242@gmail.com
 
 ---
 
