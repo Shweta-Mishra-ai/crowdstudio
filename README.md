@@ -2,7 +2,7 @@
 
 > **Collaborate with the crowd on AI-generated music. Create, share, and vote on AI-generated songs in real-time.**
 
-[![GitHub](https://img.shields.io/badge/GitHub-Shweta-Mishra-ai-blue?style=flat-square&logo=github)](https://github.com/Shwetam77777/crowdstudio)
+[![GitHub](https://img.shields.io/badge/GitHub-ShwetaMishra-ai-?style=flat-square&logo=github)](https://github.com/Shwetam77777/crowdstudio)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Live-brightgreen?style=flat-square)]()
 [![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=flat-square&logo=vercel)](https://crowdstudio.vercel.app)
