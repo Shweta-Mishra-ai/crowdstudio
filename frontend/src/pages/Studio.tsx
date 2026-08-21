@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Play, Square, Save, Sparkles, Music2, Drum, Waves, Volume2, VolumeX } from "lucide-react";
+import { Play, Square, Save, Sparkles, Music2, Drum, Waves, Volume2, VolumeX, Download, FileMusic } from "lucide-react";
 import { useJamEngine, type MixerChannel } from "../hooks/useJamEngine";
 import { usePresence } from "../hooks/usePresence";
 import { getSocket } from "../lib/socket";
@@ -7,6 +7,8 @@ import { api, apiErrorMessage } from "../lib/api";
 import { VUMeter } from "../components/VUMeter";
 import { AudioVisualizer } from "../components/AudioVisualizer";
 import { ChatPanel } from "../components/ChatPanel";
+import { renderJamToWav } from "../lib/renderJamToWav";
+import { buildJamMidi } from "../lib/exportMidi";
 
 export default function Studio() {
   const { isPlaying, params, start, stop, setParams, getAnalyser, mixer, setChannelVolume, toggleChannelMute } =
@@ -20,6 +22,8 @@ export default function Studio() {
   const [exportState, setExportState] = useState<"idle" | "exporting" | "done" | "error">("idle");
   const [exportError, setExportError] = useState<string | null>(null);
   const [exportUrl, setExportUrl] = useState<string | null>(null);
+  const [wavRendering, setWavRendering] = useState(false);
+  const [wavError, setWavError] = useState<string | null>(null);
 
   useEffect(() => {
     const socket = getSocket();
@@ -44,6 +48,35 @@ export default function Studio() {
       setSaveState("error");
       setSaveError(apiErrorMessage(err, "Could not save track"));
     }
+  }
+
+  function downloadBlob(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    // Revoke on a delay rather than immediately — some browsers cancel the
+    // download if the object URL is revoked before the click is processed.
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  async function handleDownloadWav() {
+    setWavRendering(true);
+    setWavError(null);
+    try {
+      const blob = await renderJamToWav(params, mixer, 8);
+      downloadBlob(blob, `${title || "crowdjam-jam"}.wav`);
+    } catch (err) {
+      setWavError(err instanceof Error ? err.message : "Could not render audio");
+    } finally {
+      setWavRendering(false);
+    }
+  }
+
+  function handleDownloadMidi() {
+    const blob = buildJamMidi(params, 8);
+    downloadBlob(blob, `${title || "crowdjam-jam"}.mid`);
   }
 
   async function handleExport() {
@@ -187,6 +220,33 @@ export default function Studio() {
             onChange={(v) => setParams({ reverbWet: v / 100 })}
             suffix="%"
           />
+        </div>
+      </div>
+
+      <div className="channel-strip mb-6 p-6">
+        <h2 className="mb-1 font-semibold">Export to your DAW</h2>
+        <p className="mb-3 text-xs text-muted">
+          Real files, not a fake connection — download and drag straight into Ableton, FL Studio,
+          Logic, Reaper, or any other DAW. WAV renders 8 bars of actual audio offline (a few
+          seconds); MIDI is instant, editable note data (chords, bass, and a melodic guide).
+        </p>
+        {wavError && <p className="mb-3 text-sm text-alert" role="alert">{wavError}</p>}
+        <div className="flex gap-3">
+          <button
+            onClick={handleDownloadWav}
+            disabled={wavRendering}
+            className="flex flex-1 items-center justify-center gap-2 rounded border border-paper/15 py-2 text-sm transition-colors hover:border-primary disabled:opacity-50"
+          >
+            <Download size={15} />
+            {wavRendering ? "Rendering…" : "Download WAV"}
+          </button>
+          <button
+            onClick={handleDownloadMidi}
+            className="flex flex-1 items-center justify-center gap-2 rounded border border-paper/15 py-2 text-sm transition-colors hover:border-primary"
+          >
+            <FileMusic size={15} />
+            Download MIDI
+          </button>
         </div>
       </div>
 

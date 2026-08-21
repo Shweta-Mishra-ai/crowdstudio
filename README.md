@@ -26,6 +26,7 @@ found in both during audit.
 | Jam room live chat | Real, jam-room-scoped (Socket.io rooms), rate-limited, 50-message history |
 | Live audience voting (🔥/🎶) | Real, per-track WebSocket room, live "who's winning" bar |
 | Per-instrument mixer | Real Tone.Volume nodes per channel — drums/bass/pads/lead each have a live volume fader + mute |
+| Export to DAW (WAV + MIDI) | Real files — offline-rendered WAV audio + editable MIDI note data, importable into any DAW |
 | AI export | Calls a real configured provider API, or returns a clear "not configured" error — never fakes a result |
 
 ## Local setup
@@ -288,3 +289,28 @@ history instead of just pushing the current schema.
 - The generative audio engine itself (Tone.js synthesis) was legitimately
   good — kept and hardened (proper cleanup/disposal on stop, no
   autoplay-before-gesture issues).
+
+## DAW export (WAV + MIDI)
+
+There is no public API for "connecting" to Ableton, FL Studio, Logic, or
+Pro Tools — that live-integration model doesn't exist for third-party web
+apps. What real producers actually do is bounce audio and drag files into
+their DAW, so that's what this implements, for real:
+
+- **WAV** (`lib/renderJamToWav.ts`, `lib/wavEncoder.ts`) renders 8 bars of
+  the current arrangement offline via `Tone.Offline` (deterministic, faster
+  than real-time) and hand-encodes it as standard 16-bit PCM — the one
+  format every DAW opens natively. The WAV encoder is a small, dependency-free,
+  unit-tested function (`__tests__/export.test.ts`) rather than an external
+  library, since the format itself is simple and well-specified.
+- **MIDI** (`lib/exportMidi.ts`, via `midi-writer-js`) exports real,
+  editable note events on three tracks (pads/chords, bass, and a
+  deterministic melodic guide) — not audio, actual notes a producer can
+  rewrite, quantize, or reassign instruments to in their DAW. It's
+  deliberately deterministic rather than trying to "record" the live
+  engine's randomized lead/hats, which have no meaningful translation into
+  a fixed file — a clean, predictable arpeggio over the same chord tones is
+  a more useful starting point for editing.
+- Both are pure client-side, no backend or API key required, and reuse the
+  exact same chord/scale logic (`SCALES`, `buildTriad`) already tested for
+  the live engine, so what you download matches what you heard.
