@@ -107,8 +107,8 @@ export default function Studio() {
         </div>
         <button
           onClick={() => (isPlaying ? stop() : start())}
-          className={`flex items-center gap-2 rounded-lg px-6 py-3 font-display text-base font-semibold transition-colors ${
-            isPlaying ? "bg-accent text-bg" : "bg-primary text-bg"
+          className={`flex items-center gap-2 rounded-lg px-6 py-3 font-display text-base font-semibold text-white transition-shadow ${
+            isPlaying ? "bg-accent shadow-glow-cyan" : "neon-button"
           }`}
         >
           {isPlaying ? <Square size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}

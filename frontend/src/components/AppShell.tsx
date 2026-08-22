@@ -28,7 +28,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <aside className="hidden w-60 shrink-0 flex-col border-r border-paper/10 bg-surface/60 px-4 py-6 sm:flex">
         <div className="mb-8 flex items-center gap-2 px-2">
           <Radio className="text-primary" size={22} />
-          <span className="font-display text-lg font-semibold tracking-tight text-paper">
+          <span className="font-display text-lg font-semibold tracking-tight neon-text">
             CrowdJam
           </span>
         </div>
@@ -83,9 +83,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           header takes its place instead of being squeezed in. */}
       <div className="flex flex-1 flex-col">
         <header className="glass flex items-center justify-between px-4 py-3 sm:hidden">
-          <NavLink to="/" className="flex items-center gap-2 font-display text-lg font-semibold text-primary">
-            <Radio size={20} />
-            CrowdJam
+          <NavLink to="/" className="flex items-center gap-2 font-display text-lg font-semibold">
+            <Radio size={20} className="text-primary" />
+            <span className="neon-text">CrowdJam</span>
           </NavLink>
           <div className="flex items-center gap-3 text-sm">
             <NavLink to="/leaderboard" className="text-muted">

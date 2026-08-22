@@ -99,16 +99,23 @@ whichever provider you pick, since each has a different API contract.
 
 ## Design
 
-A deliberate visual identity, not a default theme — the product is a live
-audio jamming tool, so the UI borrows from a mixing console rather than
-generic "AI app" neon-cyberpunk:
+The visual identity pivoted from an earlier "mixing console" theme to a
+dark neon look in the style of Suno/Udio/ElevenLabs — deep near-black base
+with a purple→pink→cyan gradient accent, since that's the visual language
+people now associate with AI music tools.
 
 - **App shell**: sidebar navigation (`components/AppShell.tsx`) — the
   pattern real platforms use (Spotify, Linear, most DAWs) — instead of a
   single thin top navbar, with a condensed header on mobile.
-- **Palette**: warm charcoal console body (`#1C1815`), amber VU-meter
-  accent (`#E8A33D`), teal for "live" states (`#4FB8A6`), rust reserved
-  only for errors (`#C1543A`).
+- **Palette**: near-black base (`#0A0A12`), electric purple/magenta
+  primary (`#B24BFF`), electric cyan accent (`#00E5FF`), neon red reserved
+  only for errors (`#FF3B5C`). A subtle radial glow anchored to the top of
+  the page gives the "lit from an unseen source" depth these apps have,
+  without a heavy background image.
+- **Neon accents used sparingly**: `.neon-text` (gradient text) and
+  `.neon-button` (gradient background + glow shadow) are reserved for the
+  logo and the primary "Start Jam" CTA — glowing everything would cancel
+  out the effect and just read as noisy.
 - **Type**: Space Grotesk for display headings, IBM Plex Sans for body
   text, IBM Plex Mono for anything numeric — BPM, like counts, ranks — the
   way a real console readout would render them.
@@ -119,7 +126,7 @@ generic "AI app" neon-cyberpunk:
   the 404 page — instead of a generic pulsing dot. Respects
   `prefers-reduced-motion`.
 - Cards use a "channel strip" treatment (`.channel-strip` utility) to keep
-  the console metaphor consistent across the feed, leaderboard, and profile.
+  a mixing-console structural metaphor even under the neon palette.
 
 ## The jam engine — what "generative music" actually means here
 

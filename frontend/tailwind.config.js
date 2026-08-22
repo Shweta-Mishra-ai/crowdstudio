@@ -4,22 +4,29 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Warm analog mixing-console palette — deliberately not the
-        // generic near-black+neon look this project's UI was inheriting
-        // from present-mind-sound, and not Claude's own terracotta.
-        bg: "#1C1815",       // console body
-        surface: "#26201B",  // panel
-        panel: "#2F2820",    // channel strip
-        primary: "#E8A33D",  // VU-meter amber — the main accent
-        accent: "#4FB8A6",   // "live" teal — presence, AI export
-        alert: "#C1543A",    // rust — errors only
-        paper: "#F2EDE4",    // primary text
-        muted: "#9C9284",    // secondary text, warm gray (not cool gray)
+        // Neon AI-music-app palette — deep near-black base with electric
+        // purple/pink/cyan accents, the same visual language Suno/Udio/
+        // ElevenLabs use, instead of the earlier warm analog-console look.
+        bg: "#0A0A12",        // near-black, slight indigo tint
+        surface: "#141220",   // panel
+        panel: "#1B1830",     // channel strip
+        primary: "#B24BFF",   // electric purple/magenta — main accent
+        accent: "#00E5FF",    // electric cyan — "live" states, secondary accent
+        alert: "#FF3B5C",     // neon red — errors only
+        paper: "#F4F1FF",     // primary text (very light violet-white)
+        muted: "#9490B8",     // secondary text, cool violet-gray
       },
       fontFamily: {
         display: ["Space Grotesk", "sans-serif"],
         sans: ["IBM Plex Sans", "sans-serif"],
         mono: ["IBM Plex Mono", "monospace"],
+      },
+      boxShadow: {
+        glow: "0 0 20px rgba(178, 75, 255, 0.35), 0 0 4px rgba(178, 75, 255, 0.6)",
+        "glow-cyan": "0 0 20px rgba(0, 229, 255, 0.35), 0 0 4px rgba(0, 229, 255, 0.6)",
+      },
+      backgroundImage: {
+        "neon-gradient": "linear-gradient(135deg, #FF3EC9 0%, #B24BFF 50%, #00E5FF 100%)",
       },
     },
   },

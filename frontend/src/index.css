@@ -14,6 +14,11 @@
        their dark variant instead of the browser's default light chrome,
        which otherwise looks jarringly out of place against this palette. */
     color-scheme: dark;
+    /* Subtle radial glow anchored to the top of the viewport — cheap way
+       to get the "lit from an unseen source" depth every neon-AI-app UI
+       (Suno, Udio, ElevenLabs) has, without a heavy background image. */
+    background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(178, 75, 255, 0.15), transparent);
+    background-attachment: fixed;
   }
   ::selection {
     @apply bg-primary/30 text-paper;
@@ -29,7 +34,23 @@
     @apply bg-surface/70 backdrop-blur-md border border-paper/10;
   }
   .channel-strip {
-    @apply bg-panel border border-paper/10 rounded-lg;
+    @apply bg-panel border border-paper/10 rounded-lg transition-shadow;
+  }
+  .channel-strip:hover {
+    @apply border-primary/30;
+  }
+  /* Gradient text for headline moments — the signature "AI app" treatment. */
+  .neon-text {
+    @apply bg-neon-gradient bg-clip-text text-transparent;
+  }
+  /* Glowing primary action — used sparingly (Start Jam, primary CTAs) so
+     the glow reads as "this is the live/important action" rather than
+     decorating everything and losing meaning. */
+  .neon-button {
+    @apply bg-neon-gradient text-white shadow-glow transition-shadow;
+  }
+  .neon-button:hover {
+    box-shadow: 0 0 30px rgba(178, 75, 255, 0.5), 0 0 8px rgba(178, 75, 255, 0.8);
   }
   /* Signature motif: a thin animated signal line, standing in for the
      literal audio waveform this product is built around. Used as a
@@ -43,7 +64,7 @@
       transparent 6px
     );
     height: 2px;
-    opacity: 0.35;
+    opacity: 0.4;
   }
 }
 
