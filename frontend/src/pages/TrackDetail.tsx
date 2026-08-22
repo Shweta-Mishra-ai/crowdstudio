@@ -152,7 +152,7 @@ export default function TrackDetail() {
           </div>
         ) : (
           <p className="text-sm text-muted">
-            <Link to="/login" className="text-primary">Log in</Link> to comment.
+            Couldn't start a session, so commenting isn't available right now — try refreshing.
           </p>
         )}
       </div>

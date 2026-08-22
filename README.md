@@ -15,7 +15,7 @@ found in both during audit.
 
 | Feature | Status |
 |---|---|
-| Auth (register/login) | Real, with specific error messages (not generic "failed") |
+| Auth | No login wall — every visitor gets an automatic guest identity (real, DB-backed) |
 | Live Jam Studio | Real Tone.js synthesis — tempo, filter, reverb, scale, all audible |
 | Save jam as track | Real DB write, shows up in global feed |
 | Global feed | Real, paginated, DB-backed |
@@ -321,3 +321,18 @@ their DAW, so that's what this implements, for real:
 - Both are pure client-side, no backend or API key required, and reuse the
   exact same chord/scale logic (`SCALES`, `buildTriad`) already tested for
   the live engine, so what you download matches what you heard.
+
+## No login wall — automatic guest identity
+
+There is no login/register UI. On first visit, the app silently creates a
+passwordless "guest" account via `POST /auth/guest` and stores its token in
+localStorage exactly like a real login would — so track authorship, likes,
+and chat usernames still work, but nobody has to fill out a form to use
+the app. Returning to the same browser reuses the same guest identity
+instead of creating a new one every time. The sidebar shows a "reset
+identity" button (`RefreshCw` icon) as the closest equivalent to logging
+out, for starting fresh or testing as a different user.
+
+The backend's original email/password `register` and `login` routes are
+still there and still tested (in case a real-account flow is wanted back
+later) — the frontend just doesn't call them anymore.

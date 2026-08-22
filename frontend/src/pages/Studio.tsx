@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Play, Square, Save, Sparkles, Music2, Drum, Waves, Volume2, VolumeX, Download, FileMusic } from "lucide-react";
+import { Play, Square, Save, Sparkles, Music2, Drum, Waves, Volume2, VolumeX, Download, FileMusic, PlayCircle } from "lucide-react";
 import { useJamEngine, type MixerChannel } from "../hooks/useJamEngine";
 import { usePresence } from "../hooks/usePresence";
 import { getSocket } from "../lib/socket";
@@ -24,6 +24,7 @@ export default function Studio() {
   const [exportUrl, setExportUrl] = useState<string | null>(null);
   const [wavRendering, setWavRendering] = useState(false);
   const [wavError, setWavError] = useState<string | null>(null);
+  const [wavPreviewUrl, setWavPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const socket = getSocket();
@@ -32,6 +33,15 @@ export default function Studio() {
       socket.emit("leave-jam-room");
     };
   }, []);
+
+  // Revoke the rendered-audio object URL when navigating away from the
+  // Studio — otherwise it stays alive in memory for the rest of the tab's
+  // life even though nothing can play it anymore.
+  useEffect(() => {
+    return () => {
+      if (wavPreviewUrl) URL.revokeObjectURL(wavPreviewUrl);
+    };
+  }, [wavPreviewUrl]);
 
   async function handleSave() {
     if (!title.trim()) {
@@ -61,17 +71,31 @@ export default function Studio() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  async function handleDownloadWav() {
+  async function handleRenderWav() {
     setWavRendering(true);
     setWavError(null);
     try {
       const blob = await renderJamToWav(params, mixer, 8);
-      downloadBlob(blob, `${title || "crowdjam-jam"}.wav`);
+      // Revoke the previous preview URL before creating a new one, so
+      // re-rendering repeatedly doesn't leak object URLs for the life of
+      // the tab.
+      setWavPreviewUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return URL.createObjectURL(blob);
+      });
     } catch (err) {
       setWavError(err instanceof Error ? err.message : "Could not render audio");
     } finally {
       setWavRendering(false);
     }
+  }
+
+  function handleDownloadWav() {
+    if (!wavPreviewUrl) return;
+    const a = document.createElement("a");
+    a.href = wavPreviewUrl;
+    a.download = `${title || "crowdjam-jam"}.wav`;
+    a.click();
   }
 
   function handleDownloadMidi() {
@@ -224,21 +248,37 @@ export default function Studio() {
       </div>
 
       <div className="channel-strip mb-6 p-6">
-        <h2 className="mb-1 font-semibold">Export to your DAW</h2>
+        <h2 className="mb-1 font-semibold">Render &amp; Export</h2>
         <p className="mb-3 text-xs text-muted">
-          Real files, not a fake connection — download and drag straight into Ableton, FL Studio,
-          Logic, Reaper, or any other DAW. WAV renders 8 bars of actual audio offline (a few
-          seconds); MIDI is instant, editable note data (chords, bass, and a melodic guide).
+          Renders 8 bars of the actual arrangement into a real, playable audio file — press play
+          right here like you would on Spotify, or drag the download into Ableton, FL Studio,
+          Logic, Reaper, or any other DAW. MIDI export is instant, editable note data instead of audio.
         </p>
         {wavError && <p className="mb-3 text-sm text-alert" role="alert">{wavError}</p>}
+
+        <button
+          onClick={handleRenderWav}
+          disabled={wavRendering}
+          className="mb-3 flex w-full items-center justify-center gap-2 rounded bg-accent py-2 text-sm font-semibold text-bg shadow-glow-cyan disabled:opacity-50"
+        >
+          <PlayCircle size={16} />
+          {wavRendering ? "Rendering…" : wavPreviewUrl ? "Re-render" : "Render 8 Bars"}
+        </button>
+
+        {wavPreviewUrl && (
+          <div className="mb-3">
+            <audio controls src={wavPreviewUrl} className="w-full" />
+          </div>
+        )}
+
         <div className="flex gap-3">
           <button
             onClick={handleDownloadWav}
-            disabled={wavRendering}
-            className="flex flex-1 items-center justify-center gap-2 rounded border border-paper/15 py-2 text-sm transition-colors hover:border-primary disabled:opacity-50"
+            disabled={!wavPreviewUrl}
+            className="flex flex-1 items-center justify-center gap-2 rounded border border-paper/15 py-2 text-sm transition-colors hover:border-primary disabled:opacity-40"
           >
             <Download size={15} />
-            {wavRendering ? "Rendering…" : "Download WAV"}
+            Download WAV
           </button>
           <button
             onClick={handleDownloadMidi}
