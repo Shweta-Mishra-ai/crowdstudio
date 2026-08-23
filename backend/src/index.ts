@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth";
 import trackRoutes from "./routes/tracks";
 import aiExportRoutes from "./routes/aiExport";
 import userRoutes from "./routes/users";
+import spotifyRoutes from "./routes/spotify";
 import { prisma } from "./db";
 
 // Exported (not just run as a side effect) so tests can import the app
@@ -39,6 +40,10 @@ export function buildApp() {
   app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
   app.use("/auth", authLimiter, authRoutes);
+  // Mounted before trackRoutes so "/tracks/spotify" never risks being
+  // shadowed by trackRoutes' "GET /tracks/:id" wildcard (which would
+  // otherwise treat "spotify" as a track id).
+  app.use("/tracks/spotify", writeLimiter, spotifyRoutes);
   app.use("/tracks", writeLimiter, trackRoutes);
   app.use("/tracks", writeLimiter, aiExportRoutes);
   app.use("/users", writeLimiter, userRoutes);

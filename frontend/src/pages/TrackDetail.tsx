@@ -9,6 +9,9 @@ interface Track {
   id: string;
   title: string;
   description: string | null;
+  kind: "jam" | "spotify";
+  spotifyTrackId: string | null;
+  spotifyArtist: string | null;
   playCount: number;
   likeCount: number;
   likedByMe: boolean;
@@ -99,14 +102,34 @@ export default function TrackDetail() {
           <span className="font-mono">{track.likeCount}</span> {track.likedByMe ? "Liked" : "Like"}
         </button>
 
-        {track.aiExportStatus === "ready" && track.aiExportUrl && (
-          <audio controls src={track.aiExportUrl} className="mt-4 w-full" />
-        )}
-        {track.aiExportStatus === "pending" && (
-          <p className="mt-4 text-sm text-muted">AI export rendering…</p>
-        )}
-        {track.aiExportStatus === "failed" && (
-          <p className="mt-4 text-sm text-alert">AI export failed — try again from the studio.</p>
+        {track.kind === "spotify" && track.spotifyTrackId ? (
+          <div className="mt-4">
+            <iframe
+              title={`Spotify player — ${track.title}`}
+              src={`https://open.spotify.com/embed/track/${track.spotifyTrackId}?theme=0`}
+              width="100%"
+              height="152"
+              style={{ borderRadius: 12, border: "none" }}
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+            />
+            <p className="mt-2 text-xs text-muted">
+              Playing via Spotify's own embedded player — real audio, real licensing, nothing
+              proxied or re-hosted here.
+            </p>
+          </div>
+        ) : (
+          <>
+            {track.aiExportStatus === "ready" && track.aiExportUrl && (
+              <audio controls src={track.aiExportUrl} className="mt-4 w-full" />
+            )}
+            {track.aiExportStatus === "pending" && (
+              <p className="mt-4 text-sm text-muted">AI export rendering…</p>
+            )}
+            {track.aiExportStatus === "failed" && (
+              <p className="mt-4 text-sm text-alert">AI export failed — try again from the studio.</p>
+            )}
+          </>
         )}
       </div>
 

@@ -336,3 +336,24 @@ out, for starting fresh or testing as a different user.
 The backend's original email/password `register` and `login` routes are
 still there and still tested (in case a real-account flow is wanted back
 later) — the frontend just doesn't call them anymore.
+
+## Real songs from Spotify
+
+Paste any `open.spotify.com/track/...` link and it's added to the feed
+and leaderboard as a real song, voted and ranked exactly the same way as
+CrowdJam sessions — one unified board, both kinds together.
+
+- **No API key or OAuth needed.** This uses Spotify's public, unauthenticated
+  `oembed` endpoint just to fetch a display title. The full Spotify Web API
+  (search, playback control) requires a Developer app + Client ID/Secret,
+  which is a real account-creation step only you can do — this
+  intentionally avoids needing that entirely for the MVP.
+- **Playback is Spotify's own official embed** (`open.spotify.com/embed/track/...`),
+  the same iframe widget used across the web. This app never stores,
+  proxies, or streams the actual audio — playback quality/length follows
+  each visitor's own Spotify session (full track if they're logged into
+  Premium in that browser, a preview otherwise, exactly as Spotify's embed
+  is designed to behave). Fully within Spotify's embed terms.
+- The `Track` model gained a `kind: "jam" | "spotify"` field (schema
+  migration required — see below) so both share the same `Like`/`Comment`/
+  leaderboard-ranking code paths without any special-casing there.

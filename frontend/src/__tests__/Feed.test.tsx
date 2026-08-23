@@ -55,7 +55,7 @@ describe("Feed", () => {
     mockedApi.get.mockResolvedValue({ data: { tracks: [] } });
     renderFeed();
     await waitFor(() => {
-      expect(screen.getByText(/no jams saved yet/i)).toBeInTheDocument();
+      expect(screen.getByText(/nothing here yet/i)).toBeInTheDocument();
     });
     expect(screen.getByRole("link", { name: /go to jam studio/i })).toHaveAttribute("href", "/studio");
   });

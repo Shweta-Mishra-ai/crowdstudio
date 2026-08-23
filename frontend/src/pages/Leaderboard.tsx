@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Trophy, Heart, Flame } from "lucide-react";
+import { Trophy, Heart, Flame, Music4, Waves } from "lucide-react";
 import { api, apiErrorMessage } from "../lib/api";
 
 interface Entry {
   rank: number;
   trackId: string;
   title: string;
+  kind: "jam" | "spotify";
   likeCount: number;
   playCount: number;
   author: { username: string; displayName: string | null };
@@ -29,8 +30,8 @@ export default function Leaderboard() {
         <Trophy className="text-primary" size={26} /> Leaderboard
       </h1>
       <p className="mb-6 text-sm text-muted">
-        Ranked by a live, time-decayed "hot" score — not just raw likes, so trending tracks can
-        actually surface instead of old favorites freezing the board.
+        Ranked by a live, time-decayed "hot" score — jams and real Spotify songs vote together, so
+        trending tracks can actually surface instead of old favorites freezing the board.
       </p>
       {error && <p className="mb-4 font-mono text-sm text-alert">{error}</p>}
       {!error && entries.length === 0 && (
@@ -56,6 +57,11 @@ export default function Leaderboard() {
                   {e.rank === 1 ? <Flame size={16} className="fill-primary" /> : `#${e.rank}`}
                 </span>
                 <span className="truncate text-paper">{e.title}</span>
+                {e.kind === "spotify" ? (
+                  <Music4 size={12} className="shrink-0 text-accent" />
+                ) : (
+                  <Waves size={12} className="shrink-0 text-primary" />
+                )}
                 <span className="hidden shrink-0 text-sm text-muted sm:inline">
                   by {e.author.displayName ?? e.author.username}
                 </span>
