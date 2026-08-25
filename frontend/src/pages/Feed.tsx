@@ -12,6 +12,7 @@ interface Track {
   title: string;
   description: string | null;
   kind: "jam" | "spotify";
+  spotifyArtist: string | null;
   playCount: number;
   likeCount: number;
   likedByMe: boolean;
@@ -118,13 +119,27 @@ export default function Feed() {
                 {t.description && <p className="mb-2 text-sm text-muted">{t.description}</p>}
               </div>
               <p className="mt-3 flex items-center gap-1.5 font-mono text-xs text-muted">
-                by{" "}
-                <Link to={`/profile/${t.author.username}`} className="text-accent hover:underline">
-                  {t.author.displayName ?? t.author.username}
-                </Link>
-                <span className="flex items-center gap-1">
-                  <PlayCircle size={12} /> {t.playCount}
-                </span>
+                {t.kind === "spotify" ? (
+                  <>
+                    {t.spotifyArtist ? (
+                      <span className="text-paper/80">{t.spotifyArtist}</span>
+                    ) : (
+                      <span className="italic">unknown artist</span>
+                    )}
+                    <span>·</span>
+                    <span>added by {t.author.displayName ?? t.author.username}</span>
+                  </>
+                ) : (
+                  <>
+                    by{" "}
+                    <Link to={`/profile/${t.author.username}`} className="text-accent hover:underline">
+                      {t.author.displayName ?? t.author.username}
+                    </Link>
+                    <span className="flex items-center gap-1">
+                      <PlayCircle size={12} /> {t.playCount}
+                    </span>
+                  </>
+                )}
               </p>
             </div>
           ))}

@@ -357,3 +357,30 @@ CrowdJam sessions — one unified board, both kinds together.
 - The `Track` model gained a `kind: "jam" | "spotify"` field (schema
   migration required — see below) so both share the same `Like`/`Comment`/
   leaderboard-ranking code paths without any special-casing there.
+
+## Fixed: Spotify tracks showed the wrong "artist"
+
+The `spotifyArtist` schema field existed but was never populated or
+displayed — every Spotify track showed the CrowdJam user who *added* the
+song where an artist name should have been, which reads as the app
+claiming they made it.
+
+Fixed in two parts:
+- **Backend** (`routes/spotify.ts`) now does a second best-effort fetch of
+  the public Spotify track page and parses the artist from its Open Graph
+  `og:description` tag (format `"Artist · Song · ..."`), alongside the
+  existing oEmbed title fetch. Both fetches are independently
+  best-effort/timeout-guarded — a slow or blocked Spotify response still
+  adds the track, just without a title/artist.
+- **Frontend** (Feed, Leaderboard, TrackDetail) now shows the real artist
+  for `kind: "spotify"` tracks and labels the CrowdJam user separately as
+  "added by X", instead of unconditionally showing "by X" as if that
+  person made the song.
+
+Caveat: this repo's sandboxed dev environment can't reach `open.spotify.com`
+at all (not on its allowed network list), so the Open Graph scraping was
+implemented and unit-tested against synthetic HTML, but never verified
+against Spotify's real, live page markup. If Spotify changes that tag's
+format, the artist will just come back null (graceful, not a crash) rather
+than silently wrong — but it's worth confirming against a real track after
+deploying.

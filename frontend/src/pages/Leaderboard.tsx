@@ -8,6 +8,7 @@ interface Entry {
   trackId: string;
   title: string;
   kind: "jam" | "spotify";
+  spotifyArtist: string | null;
   likeCount: number;
   playCount: number;
   author: { username: string; displayName: string | null };
@@ -63,7 +64,9 @@ export default function Leaderboard() {
                   <Waves size={12} className="shrink-0 text-primary" />
                 )}
                 <span className="hidden shrink-0 text-sm text-muted sm:inline">
-                  by {e.author.displayName ?? e.author.username}
+                  {e.kind === "spotify"
+                    ? e.spotifyArtist ?? "unknown artist"
+                    : `by ${e.author.displayName ?? e.author.username}`}
                 </span>
               </span>
               <span className="flex shrink-0 items-center gap-1 font-mono text-sm text-primary">

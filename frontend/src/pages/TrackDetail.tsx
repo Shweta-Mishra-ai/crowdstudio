@@ -85,10 +85,24 @@ export default function TrackDetail() {
       </Link>
       <div className="channel-strip mb-6 p-6">
         <h1 className="mb-1 font-display text-2xl font-semibold text-primary">{track.title}</h1>
-        <p className="mb-4 flex items-center gap-1.5 text-sm text-muted">
-          by {track.author.displayName ?? track.author.username} ·{" "}
-          <span className="flex items-center gap-1 font-mono"><PlayCircle size={13} /> {track.playCount}</span>
-        </p>
+        {track.kind === "spotify" ? (
+          <p className="mb-4 flex items-center gap-1.5 text-sm text-muted">
+            {track.spotifyArtist ? (
+              <span className="text-paper">{track.spotifyArtist}</span>
+            ) : (
+              <span className="italic">Artist unavailable</span>
+            )}
+            <span>·</span>
+            <span>
+              added by {track.author.displayName ?? track.author.username}
+            </span>
+          </p>
+        ) : (
+          <p className="mb-4 flex items-center gap-1.5 text-sm text-muted">
+            by {track.author.displayName ?? track.author.username} ·{" "}
+            <span className="flex items-center gap-1 font-mono"><PlayCircle size={13} /> {track.playCount}</span>
+          </p>
+        )}
         {track.description && <p className="mb-4 text-sm">{track.description}</p>}
 
         <button
