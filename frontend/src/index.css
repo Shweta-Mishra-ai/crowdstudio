@@ -14,9 +14,9 @@
   body {
     @apply font-sans antialiased min-h-screen selection:bg-accent/40 selection:text-white;
     background-image: 
-      radial-gradient(circle at 10% 10%, rgba(0, 242, 254, 0.08) 0px, transparent 40%),
-      radial-gradient(circle at 90% 10%, rgba(189, 0, 255, 0.08) 0px, transparent 40%),
-      radial-gradient(circle at 50% 90%, rgba(255, 171, 0, 0.06) 0px, transparent 40%);
+      radial-gradient(circle at 15% 10%, rgba(0, 242, 254, 0.07) 0px, transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(189, 0, 255, 0.07) 0px, transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(255, 171, 0, 0.05) 0px, transparent 40%);
     background-attachment: fixed;
   }
 
@@ -25,18 +25,18 @@
     outline-offset: 2px;
   }
 
-  /* Custom Pitch Black Scrollbars */
+  /* Custom Pitch Black Cessa Scrollbars */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
   }
   ::-webkit-scrollbar-track {
     background: #050508;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1A1A26;
+    background: #181824;
     border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
   ::-webkit-scrollbar-thumb:hover {
     background: #00F2FE;
@@ -47,58 +47,76 @@
   .glass {
     background: rgba(13, 13, 20, 0.85);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.7);
   }
 
   .glass-card {
-    background: linear-gradient(145deg, rgba(20, 20, 31, 0.9) 0%, rgba(10, 10, 16, 0.95) 100%);
+    background: linear-gradient(145deg, rgba(20, 20, 31, 0.85) 0%, rgba(10, 10, 16, 0.95) 100%);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.6);
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .glass-card:hover {
-    border-color: rgba(0, 242, 254, 0.4);
-    box-shadow: 0 12px 40px rgba(0, 242, 254, 0.2);
-    transform: translateY(-2px);
+    border-color: rgba(0, 242, 254, 0.35);
+    box-shadow: 0 12px 35px rgba(0, 242, 254, 0.15);
   }
 
   .channel-strip {
-    background: linear-gradient(180deg, rgba(20, 20, 31, 0.95) 0%, rgba(10, 10, 16, 0.98) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(180deg, rgba(20, 20, 31, 0.9) 0%, rgba(10, 10, 16, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 1rem;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 30px rgba(0,0,0,0.6);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 8px 25px rgba(0,0,0,0.5);
+    transition: border-color 0.2s ease;
+  }
+  .channel-strip:hover {
+    border-color: rgba(0, 242, 254, 0.3);
   }
 
   .signal-line {
     background: linear-gradient(90deg, #00F2FE 0%, #BD00FF 50%, #FFAB00 100%);
     height: 2px;
-    opacity: 0.9;
-    box-shadow: 0 0 12px rgba(0, 242, 254, 0.6);
+    opacity: 0.85;
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+  }
+
+  .neon-text {
+    @apply bg-neon-gradient bg-clip-text text-transparent;
   }
 
   .neon-text-cyan {
     color: #00F2FE;
-    text-shadow: 0 0 14px rgba(0, 242, 254, 0.7);
+    text-shadow: 0 0 14px rgba(0, 242, 254, 0.6);
   }
 
   .neon-text-amber {
     color: #FFAB00;
-    text-shadow: 0 0 14px rgba(255, 171, 0, 0.7);
+    text-shadow: 0 0 14px rgba(255, 171, 0, 0.6);
   }
 
   .neon-text-magenta {
     color: #BD00FF;
-    text-shadow: 0 0 14px rgba(189, 0, 255, 0.7);
+    text-shadow: 0 0 14px rgba(189, 0, 255, 0.6);
+  }
+
+  .neon-button {
+    background: linear-gradient(135deg, #00F2FE 0%, #BD00FF 100%);
+    color: #FFFFFF;
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
+    transition: all 0.2s ease;
+  }
+  .neon-button:hover {
+    box-shadow: 0 0 30px rgba(0, 242, 254, 0.6), 0 0 8px rgba(189, 0, 255, 0.8);
+    transform: translateY(-1px);
   }
 }
 
-/* Custom Hardware Sliders */
+/* Custom Hardware Console Sliders */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
-  background: #09090D;
+  background: #09090E;
   height: 8px;
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -107,18 +125,18 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: linear-gradient(135deg, #00F2FE 0%, #BD00FF 100%);
   cursor: pointer;
-  box-shadow: 0 0 12px rgba(0, 242, 254, 0.8);
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.8);
   border: 2px solid #FFFFFF;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 0 18px rgba(0, 242, 254, 1);
+  transform: scale(1.15);
+  box-shadow: 0 0 16px rgba(0, 242, 254, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {

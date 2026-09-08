@@ -37,10 +37,11 @@ export const DEFAULT_JAM_PARAMS: JamParams = {
 };
 
 export const SOUND_PRESETS: Record<string, Partial<JamParams>> = {
-  "Ambient Drift": { scale: "pentatonic", tempo: 75, filterCutoff: 900, reverbWet: 0.70, energy: 0.35 },
-  "Synthwave Pulse": { scale: "minor", tempo: 118, filterCutoff: 3800, reverbWet: 0.40, energy: 0.85 },
-  "Funk Groove": { scale: "major", tempo: 105, filterCutoff: 2600, reverbWet: 0.20, energy: 0.75 },
-  "Lofi Sunset": { scale: "minor", tempo: 82, filterCutoff: 1400, reverbWet: 0.55, energy: 0.50 },
+  "Lo-Fi Sunset": { scale: "minor", rootNote: "D3", tempo: 82, filterCutoff: 1400, reverbWet: 0.55, energy: 0.50 },
+  "Synthwave Pulse": { scale: "minor", rootNote: "A2", tempo: 118, filterCutoff: 3800, reverbWet: 0.40, energy: 0.85 },
+  "Funk Groove": { scale: "major", rootNote: "G2", tempo: 105, filterCutoff: 2600, reverbWet: 0.20, energy: 0.75 },
+  "Ambient Drift": { scale: "pentatonic", rootNote: "C3", tempo: 75, filterCutoff: 900, reverbWet: 0.70, energy: 0.35 },
+  "Cyber EDM": { scale: "minor", rootNote: "F2", tempo: 128, filterCutoff: 4500, reverbWet: 0.30, energy: 0.95 },
 };
 
 export type MixerChannel = "drums" | "bass" | "pads" | "lead";

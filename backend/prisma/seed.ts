@@ -1,122 +1,202 @@
 import { PrismaClient } from "@prisma/client";
-import { hash } from "bcryptjs";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-    console.log("🌱 Starting seed...");
+  console.log("🌱 Seeding CrowdStudio database...");
 
-    // Create sample users
-    const hashedPassword = await hash("password123", 10);
+  const passwordHash = await bcrypt.hash("password123", 10);
 
-    const producer1 = await prisma.user.upsert({
-        where: { email: "producer@example.com" },
-        update: {},
-        create: {
-            email: "producer@example.com",
-            password: hashedPassword,
-            role: "producer",
-        },
-    });
+  // 1. Create Demo Producer & Community Members
+  const demoProducer = await prisma.user.upsert({
+    where: { username: "demo_producer" },
+    update: {},
+    create: {
+      email: "demo@crowdstudio.ai",
+      username: "demo_producer",
+      passwordHash,
+      displayName: "Demo Producer 🎵",
+      bio: "Crafting synthwave rhythms and cybernetic beats in CrowdStudio.",
+    },
+  });
 
-    const producer2 = await prisma.user.upsert({
-        where: { email: "dj.beats@example.com" },
-        update: {},
-        create: {
-            email: "dj.beats@example.com",
-            password: hashedPassword,
-            role: "producer",
-        },
-    });
+  const synthMaster = await prisma.user.upsert({
+    where: { username: "synth_master" },
+    update: {},
+    create: {
+      email: "master@crowdstudio.ai",
+      username: "synth_master",
+      passwordHash,
+      displayName: "Synth Master ✨",
+      bio: "Analog synthesizers, modular patches, and deep ambient soundscapes.",
+    },
+  });
 
-    const audience = await prisma.user.upsert({
-        where: { email: "listener@example.com" },
-        update: {},
-        create: {
-            email: "listener@example.com",
-            password: hashedPassword,
-            role: "audience",
-        },
-    });
+  const lofiChill = await prisma.user.upsert({
+    where: { username: "lofi_beats" },
+    update: {},
+    create: {
+      email: "lofi@crowdstudio.ai",
+      username: "lofi_beats",
+      passwordHash,
+      displayName: "Lo-Fi Beats ☕",
+      bio: "Chill chords, vinyl warmth, and rainy day coffee sessions.",
+    },
+  });
 
-    console.log("✅ Created users");
+  console.log("✅ Created demo users");
 
-    // Sample free audio URLs for testing
-    const sampleSongs = [
-        {
-            title: "Sunset Vibes",
-            description: "A chill lofi beat perfect for relaxing evenings",
-            audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-            ownerId: producer1.id,
-        },
-        {
-            title: "Urban Jungle",
-            description: "Hard-hitting trap with deep bass",
-            audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-            ownerId: producer1.id,
-        },
-        {
-            title: "Morning Coffee",
-            description: "Smooth jazz to start your day right",
-            audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-            ownerId: producer2.id,
-        },
-        {
-            title: "Electric Dreams",
-            description: "Synthwave journey through the 80s",
-            audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
-            ownerId: producer2.id,
-        },
-        {
-            title: "Bass Drop",
-            description: "Heavy dubstep for the club",
-            audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
-            ownerId: producer1.id,
-        },
-    ];
+  // 2. Create Sample Tracks (both live Jams and Spotify songs)
+  const track1 = await prisma.track.upsert({
+    where: { id: "seed-track-1" },
+    update: {},
+    create: {
+      id: "seed-track-1",
+      title: "Neon Cyberpunk Sunset",
+      description: "Driving minor synthwave jam rendered in CrowdStudio with heavy arpeggio and saturated low-pass filter.",
+      kind: "jam",
+      durationSec: 120,
+      playCount: 142,
+      jamConfig: {
+        tempo: 118,
+        rootNote: "A",
+        scale: "minor",
+        filterCutoff: 3800,
+        reverbWet: 0.4,
+        energy: 0.85,
+      },
+      authorId: demoProducer.id,
+    },
+  });
 
-    const createdSongs = [];
-    for (const songData of sampleSongs) {
-        const song = await prisma.song.create({
-            data: songData,
-        });
-        createdSongs.push(song);
-        console.log(`✅ Created song: ${song.title}`);
-    }
+  const track2 = await prisma.track.upsert({
+    where: { id: "seed-track-2" },
+    update: {},
+    create: {
+      id: "seed-track-2",
+      title: "Midnight Rain & Tape Echo",
+      description: "Slow-tempo lofi groove with soft diatonic chords and warm tape-saturated delay.",
+      kind: "jam",
+      durationSec: 90,
+      playCount: 88,
+      jamConfig: {
+        tempo: 82,
+        rootNote: "D",
+        scale: "minor",
+        filterCutoff: 1400,
+        reverbWet: 0.55,
+        energy: 0.5,
+      },
+      authorId: lofiChill.id,
+    },
+  });
 
-    // Create sample likes
-    const likesToCreate = [
-        { userId: audience.id, songId: createdSongs[0].id },
-        { userId: audience.id, songId: createdSongs[1].id },
-        { userId: audience.id, songId: createdSongs[2].id },
-        { userId: producer1.id, songId: createdSongs[2].id },
-        { userId: producer1.id, songId: createdSongs[3].id },
-        { userId: producer2.id, songId: createdSongs[0].id },
-        { userId: producer2.id, songId: createdSongs[1].id },
-        { userId: producer2.id, songId: createdSongs[4].id },
-    ];
+  const track3 = await prisma.track.upsert({
+    where: { id: "seed-track-3" },
+    update: {},
+    create: {
+      id: "seed-track-3",
+      title: "Celestial Drift",
+      description: "Ethereal pentatonic ambient excursion with maximum reverb space.",
+      kind: "jam",
+      durationSec: 180,
+      playCount: 65,
+      jamConfig: {
+        tempo: 75,
+        rootNote: "C",
+        scale: "pentatonic",
+        filterCutoff: 900,
+        reverbWet: 0.7,
+        energy: 0.35,
+      },
+      authorId: synthMaster.id,
+    },
+  });
 
-    for (const likeData of likesToCreate) {
-        await prisma.like.create({
-            data: likeData,
-        }).catch(() => {
-            // Ignore duplicate like errors
-        });
-    }
+  const track4 = await prisma.track.upsert({
+    where: { id: "seed-track-4" },
+    update: {},
+    create: {
+      id: "seed-track-4",
+      title: "Blinding Lights",
+      description: "Synthwave pop masterpiece by The Weeknd curated from Spotify.",
+      kind: "spotify",
+      spotifyTrackId: "0VjIjW4GlUZAMYd2vXMi3b",
+      spotifyArtist: "The Weeknd",
+      spotifyUrl: "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b",
+      durationSec: 200,
+      playCount: 310,
+      authorId: demoProducer.id,
+    },
+  });
 
-    console.log("✅ Created likes");
-    console.log("\n🎉 Seed completed successfully!");
-    console.log("\n📝 Test accounts:");
-    console.log("  Producer: producer@example.com / password123");
-    console.log("  Producer: dj.beats@example.com / password123");
-    console.log("  Listener: listener@example.com / password123");
+  const track5 = await prisma.track.upsert({
+    where: { id: "seed-track-5" },
+    update: {},
+    create: {
+      id: "seed-track-5",
+      title: "Midnight City",
+      description: "Iconic electronic indie classic by M83 from Spotify.",
+      kind: "spotify",
+      spotifyTrackId: "6GyFP1nfCDB8Jyik5z8FuW",
+      spotifyArtist: "M83",
+      spotifyUrl: "https://open.spotify.com/track/6GyFP1nfCDB8Jyik5z8FuW",
+      durationSec: 243,
+      playCount: 195,
+      authorId: synthMaster.id,
+    },
+  });
+
+  console.log("✅ Created sample tracks");
+
+  // 3. Create Sample Likes
+  const sampleLikes = [
+    { userId: demoProducer.id, trackId: track2.id },
+    { userId: synthMaster.id, trackId: track1.id },
+    { userId: lofiChill.id, trackId: track1.id },
+    { userId: lofiChill.id, trackId: track4.id },
+    { userId: demoProducer.id, trackId: track5.id },
+  ];
+
+  for (const like of sampleLikes) {
+    await prisma.like.upsert({
+      where: { userId_trackId: { userId: like.userId, trackId: like.trackId } },
+      update: {},
+      create: like,
+    }).catch(() => {});
+  }
+
+  // 4. Create Sample Comments
+  await prisma.comment.createMany({
+    data: [
+      {
+        body: "The bassline progression in bar 4 is immaculate! 🔥",
+        userId: synthMaster.id,
+        trackId: track1.id,
+      },
+      {
+        body: "Perfect study background music. Love the cutoff automation!",
+        userId: demoProducer.id,
+        trackId: track2.id,
+      },
+      {
+        body: "All-time favorite synthwave track. Excited to see real Spotify embedding here!",
+        userId: lofiChill.id,
+        trackId: track4.id,
+      },
+    ],
+    skipDuplicates: true,
+  }).catch(() => {});
+
+  console.log("✅ Seed completed successfully!");
 }
 
 main()
-    .catch((e) => {
-        console.error("❌ Seed failed:", e);
-        process.exit(1);
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+  .catch((e) => {
+    console.error("❌ Seed error:", e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

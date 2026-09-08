@@ -1,15 +1,18 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, PlayCircle, Sparkles, Disc3 } from "lucide-react";
+import { Heart, PlayCircle, Sparkles, Music4, Waves } from "lucide-react";
 import { api, apiErrorMessage } from "../lib/api";
 import { useAuthStore } from "../stores/authStore";
 import { usePresence } from "../hooks/usePresence";
 import { VUMeter } from "../components/VUMeter";
+import { AddSpotifySong } from "../components/AddSpotifySong";
 
 interface Track {
   id: string;
   title: string;
   description: string | null;
+  kind: "jam" | "spotify";
+  spotifyArtist: string | null;
   playCount: number;
   likeCount: number;
   likedByMe: boolean;
@@ -23,13 +26,17 @@ export default function Feed() {
   const user = useAuthStore((s) => s.user);
   const presence = usePresence();
 
-  useEffect(() => {
+  const loadFeed = useCallback(() => {
     api
       .get("/tracks")
       .then(({ data }) => setTracks(data.tracks))
       .catch((err) => setError(apiErrorMessage(err, "Could not load feed")))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    loadFeed();
+  }, [loadFeed]);
 
   async function toggleLike(trackId: string) {
     if (!user) return;
@@ -39,94 +46,103 @@ export default function Feed() {
         prev.map((t) => (t.id === trackId ? { ...t, likedByMe: data.liked, likeCount: data.likeCount } : t))
       );
     } catch {
-      // Non-critical UI action
+      // Non-critical UI action — fail silently, like state just won't update.
     }
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
-      {/* Hero Header Section */}
-      <section className="glass-card mb-10 p-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 h-48 w-48 rounded-full bg-gradient-to-br from-accent/20 to-neon/20 blur-3xl pointer-events-none" />
-        
-        <p className="mb-3 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-accent font-semibold">
-          <VUMeter active={presence.inJamRoom > 0} bars={4} />
-          {presence.inJamRoom > 0 ? `${presence.inJamRoom} active musicians in jam room` : "Studio room is quiet — be the first to jam"}
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
+      <section className="mb-6">
+        <p className="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted">
+          <VUMeter active={presence.inJamRoom > 0} bars={3} />
+          {presence.inJamRoom > 0 ? `${presence.inJamRoom} jamming right now` : "the room is quiet"}
         </p>
-        <h1 className="font-display text-3xl font-extrabold tracking-tight text-paper sm:text-5xl">
-          What the crowd is <span className="neon-text-cyan">building</span>
+        <h1 className="font-display text-3xl font-bold text-white sm:text-4xl">
+          What the crowd is building
         </h1>
-        <p className="mt-3 max-w-2xl text-base text-muted leading-relaxed">
-          Real generative audio synthesis produced in live browser sessions. Saved straight from the Jam Studio.
+        <p className="mt-2 max-w-xl text-sm text-muted">
+          Live CrowdStudio generative sessions and real songs from Spotify, ranked and voted on together.
         </p>
-        
-        <div className="mt-6 flex flex-wrap gap-4">
-          <Link
-            to="/studio"
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-accent via-primary to-neon px-6 py-3 text-sm font-bold text-bg shadow-glow hover:brightness-110 transition-all active:scale-95"
-          >
-            <Disc3 size={18} /> Open Jam Studio (No Login Needed)
-          </Link>
-        </div>
+        <div className="signal-line mt-6" />
       </section>
+
+      <AddSpotifySong onAdded={loadFeed} />
 
       {loading && <FeedSkeleton />}
 
       {!loading && error && (
-        <div className="glass-card p-6 text-center text-sm text-alert">{error}</div>
+        <div className="glass-card p-6 rounded-2xl text-center text-sm text-alert">{error}</div>
       )}
 
       {!loading && !error && tracks.length === 0 && (
-        <div className="glass-card flex flex-col items-center gap-4 p-12 text-center">
-          <Sparkles className="text-accent" size={36} />
-          <h2 className="text-xl font-bold text-paper">No jams saved yet.</h2>
-          <p className="text-sm text-muted">Open the Studio, hit start jam, and publish your first session to the board!</p>
-          <Link
-            to="/studio"
-            className="mt-2 rounded-xl bg-accent px-6 py-3 text-sm font-bold text-bg shadow-glow hover:brightness-110 transition-all"
-          >
+        <div className="glass-card flex flex-col items-center gap-3 p-10 rounded-2xl text-center">
+          <Sparkles className="text-accent" size={28} />
+          <p className="text-white font-semibold">Nothing here yet.</p>
+          <p className="text-sm text-muted">
+            Open the Studio and jam, or add a real Spotify track above — be the first on the board.
+          </p>
+          <Link to="/studio" className="mt-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-bg shadow-glow-cyan">
             Go to Jam Studio
           </Link>
         </div>
       )}
 
       {!loading && !error && tracks.length > 0 && (
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           {tracks.map((t) => (
-            <div key={t.id} className="glass-card flex flex-col justify-between p-6 group">
+            <div key={t.id} className="glass-card flex flex-col justify-between p-5 rounded-2xl transition-all hover:border-accent/40">
               <div>
-                <div className="mb-2 flex items-start justify-between gap-3">
-                  <Link to={`/tracks/${t.id}`} className="font-display text-lg font-bold text-paper hover:text-accent transition-colors">
-                    {t.title}
+                <div className="mb-2 flex items-start justify-between gap-2">
+                  <Link
+                    to={`/tracks/${t.id}`}
+                    className="flex items-center gap-2 font-semibold text-white hover:text-accent transition-colors"
+                  >
+                    {t.kind === "spotify" ? (
+                      <Music4 size={15} className="shrink-0 text-accent" />
+                    ) : (
+                      <Waves size={15} className="shrink-0 text-primary" />
+                    )}
+                    <span className="truncate">{t.title}</span>
                   </Link>
                   <button
                     onClick={() => toggleLike(t.id)}
                     disabled={!user}
-                    title={user ? "Like this track" : "Log in to like tracks"}
-                    className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-mono font-semibold transition-all ${
-                      t.likedByMe
-                        ? "bg-alert/20 text-alert border border-alert/40 shadow-glow"
-                        : "bg-surface/80 text-muted border border-white/10 hover:text-paper"
+                    title={user ? "Like this track" : "Starting a session…"}
+                    className={`flex shrink-0 items-center gap-1.5 font-mono text-xs rounded-lg px-2 py-1 transition-all ${
+                      t.likedByMe ? "bg-primary/20 text-primary border border-primary/40" : "bg-white/5 text-muted hover:text-white"
                     } disabled:opacity-40`}
                   >
-                    <Heart size={14} fill={t.likedByMe ? "currentColor" : "none"} />
+                    <Heart size={13} fill={t.likedByMe ? "currentColor" : "none"} />
                     {t.likeCount}
                   </button>
                 </div>
-                {t.description && <p className="mb-3 text-sm text-muted line-clamp-2">{t.description}</p>}
+                {t.description && <p className="mb-3 text-xs text-paper/70 line-clamp-2 leading-relaxed">{t.description}</p>}
               </div>
-
-              <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 text-xs font-mono text-muted">
-                <span className="flex items-center gap-1">
-                  by{" "}
-                  <Link to={`/profile/${t.author.username}`} className="text-accent font-semibold hover:underline">
-                    {t.author.displayName ?? t.author.username}
-                  </Link>
-                </span>
-                <span className="flex items-center gap-1.5 text-paper">
-                  <PlayCircle size={14} className="text-accent" /> {t.playCount} plays
-                </span>
-              </div>
+              <p className="mt-3 flex items-center gap-2 font-mono text-xs text-muted border-t border-white/5 pt-3">
+                {t.kind === "spotify" ? (
+                  <>
+                    {t.spotifyArtist ? (
+                      <span className="text-accent font-semibold truncate">{t.spotifyArtist}</span>
+                    ) : (
+                      <span className="italic">Spotify Song</span>
+                    )}
+                    <span>·</span>
+                    <span className="truncate">by {t.author.displayName ?? t.author.username}</span>
+                  </>
+                ) : (
+                  <>
+                    <span>by{" "}
+                      <Link to={`/profile/${t.author.username}`} className="text-accent hover:underline">
+                        {t.author.displayName ?? t.author.username}
+                      </Link>
+                    </span>
+                    <span>·</span>
+                    <span className="flex items-center gap-1 text-paper/90">
+                      <PlayCircle size={12} className="text-accent" /> {t.playCount}
+                    </span>
+                  </>
+                )}
+              </p>
             </div>
           ))}
         </div>
@@ -137,12 +153,12 @@ export default function Feed() {
 
 function FeedSkeleton() {
   return (
-    <div className="grid gap-6 sm:grid-cols-2" aria-hidden="true">
+    <div className="grid gap-4 sm:grid-cols-2" aria-hidden="true">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="glass-card animate-pulse p-6">
-          <div className="mb-3 h-5 w-2/3 rounded bg-white/10" />
-          <div className="mb-2 h-4 w-full rounded bg-white/5" />
-          <div className="h-4 w-1/3 rounded bg-white/5" />
+        <div key={i} className="channel-strip animate-pulse p-5">
+          <div className="mb-3 h-4 w-2/3 rounded bg-paper/10" />
+          <div className="mb-2 h-3 w-full rounded bg-paper/5" />
+          <div className="h-3 w-1/3 rounded bg-paper/5" />
         </div>
       ))}
     </div>

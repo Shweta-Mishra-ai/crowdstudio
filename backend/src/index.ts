@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth";
 import trackRoutes from "./routes/tracks";
 import aiExportRoutes from "./routes/aiExport";
 import userRoutes from "./routes/users";
+import spotifyRoutes from "./routes/spotify";
 import { prisma } from "./db";
 
 // Exported (not just run as a side effect) so tests can import the app
@@ -39,9 +40,13 @@ export function buildApp() {
   app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
   app.use("/auth", authLimiter, authRoutes);
-  app.use("/tracks", trackRoutes);
-  app.use("/tracks", aiExportRoutes);
-  app.use("/users", userRoutes);
+  // Mounted before trackRoutes so "/tracks/spotify" never risks being
+  // shadowed by trackRoutes' "GET /tracks/:id" wildcard (which would
+  // otherwise treat "spotify" as a track id).
+  app.use("/tracks/spotify", writeLimiter, spotifyRoutes);
+  app.use("/tracks", writeLimiter, trackRoutes);
+  app.use("/tracks", writeLimiter, aiExportRoutes);
+  app.use("/users", writeLimiter, userRoutes);
 
   // 404 for anything unmatched — without this, unknown routes fall through
   // to Express's default HTML error page instead of a clean JSON response.
@@ -99,7 +104,7 @@ if (require.main === module) {
   attachSocket(httpServer);
 
   httpServer.listen(config.port, () => {
-    console.log(`CrowdStudio backend listening on :${config.port} (${config.nodeEnv})`);
+    console.log(`CrowdJam backend listening on :${config.port} (${config.nodeEnv})`);
   });
 
   // Graceful shutdown — finish in-flight requests and close the DB pool

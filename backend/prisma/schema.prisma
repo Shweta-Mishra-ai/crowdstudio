@@ -29,9 +29,20 @@ model Track {
   id            String    @id @default(cuid())
   title         String
   description   String?
+  // "jam" = a live CrowdJam session; "spotify" = a real song pulled in via
+  // a pasted Spotify link. Both share the same likes/comments/leaderboard
+  // machinery so voting and ranking work identically across either kind.
+  kind          String    @default("jam")
   // Jam parameters captured from the live Tone.js session so the track
   // can be re-synthesized / replayed exactly, instead of a static file.
-  jamConfig     Json
+  // Nullable because Spotify-kind tracks don't have one.
+  jamConfig     Json?
+  // Populated only for kind = "spotify". We never store or stream the
+  // actual audio — playback happens entirely through Spotify's own
+  // official embed widget using this ID.
+  spotifyTrackId String?
+  spotifyArtist  String?
+  spotifyUrl     String?
   // Populated only if the user chose a real AI export (see aiExport route).
   aiExportUrl   String?
   aiExportStatus String   @default("none") // none | pending | ready | failed
@@ -48,6 +59,7 @@ model Track {
 
   @@index([authorId])
   @@index([createdAt])
+  @@index([kind])
 }
 
 model Like {

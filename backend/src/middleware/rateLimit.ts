@@ -7,6 +7,7 @@ export const generalLimiter = rateLimit({
   limit: 300,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test",
   message: { error: "Too many requests. Please slow down and try again shortly." },
 });
 
@@ -18,6 +19,7 @@ export const authLimiter = rateLimit({
   limit: 20,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test",
   message: { error: "Too many auth attempts. Please wait a few minutes and try again." },
 });
 
@@ -28,5 +30,6 @@ export const writeLimiter = rateLimit({
   limit: 30,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test",
   message: { error: "Too many submissions. Please wait a moment before posting again." },
 });

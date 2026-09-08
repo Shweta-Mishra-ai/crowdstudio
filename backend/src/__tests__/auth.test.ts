@@ -117,3 +117,51 @@ describe("GET /auth/me", () => {
     expect(res.body.error).toBe("Invalid or expired token");
   });
 });
+
+describe("POST /auth/guest", () => {
+  it("creates a passwordless guest account and returns a usable token", async () => {
+    mockPrisma.user.create.mockResolvedValue({
+      id: "g1",
+      email: "guest_abc123@guest.crowdstudio.local",
+      username: "guest_abc123",
+      displayName: "Guest",
+    });
+    const res = await request(app).post("/auth/guest").send({});
+    expect(res.status).toBe(201);
+    expect(res.body.token).toBeTruthy();
+    expect(res.body.user.username).toMatch(/^guest_/);
+    expect(res.body.user.displayName).toBe("Guest");
+  });
+
+  it("requires no request body at all", async () => {
+    mockPrisma.user.create.mockResolvedValue({
+      id: "g2",
+      email: "guest_xyz@guest.crowdstudio.local",
+      username: "guest_xyz",
+      displayName: "Guest",
+    });
+    const res = await request(app).post("/auth/guest");
+    expect(res.status).toBe(201);
+  });
+
+  it("retries on a username collision instead of failing the request", async () => {
+    const clash = Object.assign(new Error("Unique constraint failed"), { code: "P2002" });
+    mockPrisma.user.create
+      .mockRejectedValueOnce(clash)
+      .mockResolvedValueOnce({
+        id: "g3",
+        email: "guest_retry@guest.crowdjam.local",
+        username: "guest_retry",
+        displayName: "Guest",
+      });
+    const res = await request(app).post("/auth/guest").send({});
+    expect(res.status).toBe(201);
+    expect(mockPrisma.user.create).toHaveBeenCalledTimes(2);
+  });
+
+  it("surfaces a non-collision database error instead of retrying forever", async () => {
+    mockPrisma.user.create.mockRejectedValue(new Error("database is down"));
+    const res = await request(app).post("/auth/guest").send({});
+    expect(res.status).toBe(500);
+  });
+});

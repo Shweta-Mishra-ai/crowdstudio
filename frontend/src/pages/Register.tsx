@@ -54,11 +54,11 @@ export default function Register() {
 
   return (
     <div className="flex flex-1 items-center justify-center px-4 py-12">
-      <div className="glass-card w-full max-w-md rounded-3xl p-8 relative overflow-hidden">
+      <div className="glass-card w-full max-w-md rounded-2xl p-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 -mt-10 -mr-10 h-36 w-36 rounded-full bg-neon/20 blur-3xl pointer-events-none" />
 
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-neon/20 text-neon border border-neon/30 shadow-glow">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neon/15 text-neon border border-neon/30 shadow-glow">
             <Disc3 size={24} className="animate-spin-slow" />
           </div>
           <div>
@@ -72,7 +72,7 @@ export default function Register() {
           type="button"
           onClick={handleDemoRegister}
           disabled={submitting}
-          className="mb-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-neon via-accent to-primary p-3.5 text-sm font-bold text-bg shadow-glow hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+          className="mb-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-neon via-accent to-primary p-3.5 text-sm font-bold text-bg shadow-glow hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
         >
           <Zap size={18} fill="currentColor" />
           <span>🚀 Instant 1-Click Quick Registration</span>
@@ -84,20 +84,22 @@ export default function Register() {
         </div>
 
         {error && (
-          <div className="mb-6 rounded-2xl bg-alert/20 border border-alert/40 p-4 text-sm text-alert font-semibold" role="alert">
+          <div className="mb-6 rounded-xl bg-alert/20 border border-alert/40 p-3.5 text-sm text-alert font-medium" role="alert">
             {error}
           </div>
         )}
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <label htmlFor="reg-email" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Email Address</label>
+            <label htmlFor="reg-email" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">
+              Email Address
+            </label>
             <input
               id="reg-email"
               name="email"
               type="email"
               autoComplete="email"
-              className="w-full rounded-2xl border border-white/15 bg-bg/90 px-4 py-3.5 text-sm text-white transition-all focus:border-neon focus:shadow-glow focus:outline-none"
+              className="w-full rounded-xl border border-white/15 bg-bg/90 px-4 py-3 text-sm text-white transition-all focus:border-neon focus:shadow-glow focus:outline-none"
               placeholder="musician@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -106,7 +108,9 @@ export default function Register() {
           </div>
 
           <div>
-            <label htmlFor="reg-username" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Username</label>
+            <label htmlFor="reg-username" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">
+              Username
+            </label>
             <input
               id="reg-username"
               name="username"
@@ -115,7 +119,7 @@ export default function Register() {
               maxLength={20}
               pattern="[a-zA-Z0-9_]+"
               title="Letters, numbers, and underscores only"
-              className="w-full rounded-2xl border border-white/15 bg-bg/90 px-4 py-3.5 text-sm text-white transition-all focus:border-neon focus:shadow-glow focus:outline-none"
+              className="w-full rounded-xl border border-white/15 bg-bg/90 px-4 py-3 text-sm text-white transition-all focus:border-neon focus:shadow-glow focus:outline-none"
               placeholder="e.g. synth_master"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -124,14 +128,16 @@ export default function Register() {
           </div>
 
           <div>
-            <label htmlFor="reg-password" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Password (min 8 chars)</label>
+            <label htmlFor="reg-password" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">
+              Password (min 8 chars)
+            </label>
             <input
               id="reg-password"
               name="password"
               type="password"
               autoComplete="new-password"
               minLength={8}
-              className="w-full rounded-2xl border border-white/15 bg-bg/90 px-4 py-3.5 text-sm text-white transition-all focus:border-neon focus:shadow-glow focus:outline-none"
+              className="w-full rounded-xl border border-white/15 bg-bg/90 px-4 py-3 text-sm text-white transition-all focus:border-neon focus:shadow-glow focus:outline-none"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -142,7 +148,7 @@ export default function Register() {
           <button
             type="submit"
             disabled={submitting}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white/10 border border-white/20 py-3.5 text-sm font-bold text-white hover:bg-white/20 transition-all disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/10 border border-white/20 py-3 text-sm font-bold text-white hover:bg-white/20 transition-all disabled:opacity-50"
           >
             {submitting ? "Creating Account…" : "Create Account"} <ArrowRight size={16} />
           </button>
@@ -155,7 +161,7 @@ export default function Register() {
 
           <Link
             to="/studio"
-            className="inline-flex items-center gap-2 rounded-xl bg-accent/10 border border-accent/30 px-4 py-2 text-xs font-bold text-accent hover:bg-accent/20 transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-accent/10 border border-accent/30 px-4 py-2 text-xs font-bold text-accent hover:bg-accent/20 transition-colors"
           >
             <Mic2 size={14} /> Open Jam Studio as Guest (No Login Required)
           </Link>
