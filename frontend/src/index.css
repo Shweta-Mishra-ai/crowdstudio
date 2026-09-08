@@ -1,71 +1,142 @@
-/* @import MUST come before any other rule (including @tailwind) per the
-   CSS spec — placing it after @tailwind (as the old present-mind-sound app
-   did) makes browsers silently drop it in production. */
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-bg text-paper font-sans antialiased;
-    /* Makes native controls (select, range, audio, date pickers) render in
-       their dark variant instead of the browser's default light chrome,
-       which otherwise looks jarringly out of place against this palette. */
+  html, body {
+    background-color: #050508 !important;
+    color: #FFFFFF !important;
     color-scheme: dark;
-    /* Subtle radial glow anchored to the top of the viewport — cheap way
-       to get the "lit from an unseen source" depth every neon-AI-app UI
-       (Suno, Udio, ElevenLabs) has, without a heavy background image. */
-    background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(178, 75, 255, 0.15), transparent);
+  }
+
+  body {
+    @apply font-sans antialiased min-h-screen selection:bg-accent/40 selection:text-white;
+    background-image: 
+      radial-gradient(circle at 15% 10%, rgba(0, 242, 254, 0.07) 0px, transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(189, 0, 255, 0.07) 0px, transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(255, 171, 0, 0.05) 0px, transparent 40%);
     background-attachment: fixed;
   }
-  ::selection {
-    @apply bg-primary/30 text-paper;
-  }
+
   :focus-visible {
-    outline: 2px solid theme('colors.primary');
+    outline: 2px solid theme('colors.accent');
     outline-offset: 2px;
+  }
+
+  /* Custom Pitch Black Cessa Scrollbars */
+  ::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #050508;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #181824;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00F2FE;
   }
 }
 
 @layer utilities {
   .glass {
-    @apply bg-surface/70 backdrop-blur-md border border-paper/10;
+    background: rgba(13, 13, 20, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.7);
   }
+
+  .glass-card {
+    background: linear-gradient(145deg, rgba(20, 20, 31, 0.85) 0%, rgba(10, 10, 16, 0.95) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.6);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .glass-card:hover {
+    border-color: rgba(0, 242, 254, 0.35);
+    box-shadow: 0 12px 35px rgba(0, 242, 254, 0.15);
+  }
+
   .channel-strip {
-    @apply bg-panel border border-paper/10 rounded-lg transition-shadow;
+    background: linear-gradient(180deg, rgba(20, 20, 31, 0.9) 0%, rgba(10, 10, 16, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1rem;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 8px 25px rgba(0,0,0,0.5);
+    transition: border-color 0.2s ease;
   }
   .channel-strip:hover {
-    @apply border-primary/30;
+    border-color: rgba(0, 242, 254, 0.3);
   }
-  /* Gradient text for headline moments — the signature "AI app" treatment. */
+
+  .signal-line {
+    background: linear-gradient(90deg, #00F2FE 0%, #BD00FF 50%, #FFAB00 100%);
+    height: 2px;
+    opacity: 0.85;
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+  }
+
   .neon-text {
     @apply bg-neon-gradient bg-clip-text text-transparent;
   }
-  /* Glowing primary action — used sparingly (Start Jam, primary CTAs) so
-     the glow reads as "this is the live/important action" rather than
-     decorating everything and losing meaning. */
+
+  .neon-text-cyan {
+    color: #00F2FE;
+    text-shadow: 0 0 14px rgba(0, 242, 254, 0.6);
+  }
+
+  .neon-text-amber {
+    color: #FFAB00;
+    text-shadow: 0 0 14px rgba(255, 171, 0, 0.6);
+  }
+
+  .neon-text-magenta {
+    color: #BD00FF;
+    text-shadow: 0 0 14px rgba(189, 0, 255, 0.6);
+  }
+
   .neon-button {
-    @apply bg-neon-gradient text-white shadow-glow transition-shadow;
+    background: linear-gradient(135deg, #00F2FE 0%, #BD00FF 100%);
+    color: #FFFFFF;
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
+    transition: all 0.2s ease;
   }
   .neon-button:hover {
-    box-shadow: 0 0 30px rgba(178, 75, 255, 0.5), 0 0 8px rgba(178, 75, 255, 0.8);
+    box-shadow: 0 0 30px rgba(0, 242, 254, 0.6), 0 0 8px rgba(189, 0, 255, 0.8);
+    transform: translateY(-1px);
   }
-  /* Signature motif: a thin animated signal line, standing in for the
-     literal audio waveform this product is built around. Used as a
-     section divider and an ambient "something is live here" cue. */
-  .signal-line {
-    background: repeating-linear-gradient(
-      90deg,
-      theme('colors.primary') 0px,
-      theme('colors.primary') 2px,
-      transparent 2px,
-      transparent 6px
-    );
-    height: 2px;
-    opacity: 0.4;
-  }
+}
+
+/* Custom Hardware Console Sliders */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #09090E;
+  height: 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00F2FE 0%, #BD00FF 100%);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.8);
+  border: 2px solid #FFFFFF;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 16px rgba(0, 242, 254, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -33,6 +33,8 @@ interface AuthState {
    * guest one — the closest equivalent to "log out" now that there's no
    * login screen to send someone back to. */
   resetIdentity: () => Promise<void>;
+  logout: () => void;
+  demoLogin: () => Promise<User>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -42,14 +44,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   bootstrapError: null,
 
   setAuth: (user, token) => {
+    localStorage.setItem("crowdstudio_token", token);
+    localStorage.setItem("crowdstudio_user", JSON.stringify(user));
     localStorage.setItem("crowdjam_token", token);
     localStorage.setItem("crowdjam_user", JSON.stringify(user));
     set({ user, token, isLoading: false, bootstrapError: null });
   },
 
   bootstrap: async () => {
-    const token = localStorage.getItem("crowdjam_token");
-    const userRaw = localStorage.getItem("crowdjam_user");
+    const token = localStorage.getItem("crowdstudio_token") || localStorage.getItem("crowdjam_token");
+    const userRaw = localStorage.getItem("crowdstudio_user") || localStorage.getItem("crowdjam_user");
     if (token && userRaw) {
       try {
         const user = JSON.parse(userRaw) as User;
@@ -57,6 +61,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         return;
       } catch {
         // corrupted storage, fall through to clear + create a fresh guest
+        localStorage.removeItem("crowdstudio_token");
+        localStorage.removeItem("crowdstudio_user");
         localStorage.removeItem("crowdjam_token");
         localStorage.removeItem("crowdjam_user");
       }
@@ -80,9 +86,42 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   resetIdentity: async () => {
+    localStorage.removeItem("crowdstudio_token");
+    localStorage.removeItem("crowdstudio_user");
     localStorage.removeItem("crowdjam_token");
     localStorage.removeItem("crowdjam_user");
     set({ user: null, token: null, isLoading: true, bootstrapError: null });
     await get().bootstrap();
+  },
+
+  logout: () => {
+    localStorage.removeItem("crowdstudio_token");
+    localStorage.removeItem("crowdstudio_user");
+    localStorage.removeItem("crowdjam_token");
+    localStorage.removeItem("crowdjam_user");
+    set({ user: null, token: null, isLoading: false, bootstrapError: null });
+  },
+
+  demoLogin: async () => {
+    const demoUsername = "demo_producer";
+    const demoPassword = "password123";
+    const demoEmail = "demo@crowdstudio.ai";
+    try {
+      const { data } = await api.post("/auth/login", {
+        emailOrUsername: demoUsername,
+        password: demoPassword,
+      });
+      get().setAuth(data.user, data.token);
+      return data.user;
+    } catch {
+      const { data } = await api.post("/auth/register", {
+        email: demoEmail,
+        username: demoUsername,
+        password: demoPassword,
+        displayName: "Demo Producer 🎵",
+      });
+      get().setAuth(data.user, data.token);
+      return data.user;
+    }
   },
 }));

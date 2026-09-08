@@ -26,7 +26,7 @@ export async function renderJamToWav(params: JamParams, mixer: MixerState, bars 
   const buffer = await Tone.Offline(() => {
     const compressor = new Tone.Compressor(-18, 3).toDestination();
     const masterFilter = new Tone.Filter(params.filterCutoff, "lowpass").connect(compressor);
-    const reverb = new Tone.Reverb({ decay: 3.2, wet: params.reverbWet }).connect(masterFilter);
+    const reverb = new Tone.Freeverb({ roomSize: 0.7, dampening: 3000, wet: params.reverbWet }).connect(masterFilter);
     const delay = new Tone.FeedbackDelay({ delayTime: "8n", feedback: 0.25, wet: 0.18 }).connect(reverb);
 
     const drumBus = new Tone.Filter(8000, "lowpass");

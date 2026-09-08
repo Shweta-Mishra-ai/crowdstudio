@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Play, Square, Save, Sparkles, Music2, Drum, Waves, Volume2, VolumeX, Download, FileMusic, PlayCircle } from "lucide-react";
-import { useJamEngine, type MixerChannel } from "../hooks/useJamEngine";
+import { Play, Square, Save, Sparkles, Music2, Drum, Waves, Volume2, VolumeX, Download, FileMusic, PlayCircle, Zap } from "lucide-react";
+import { useJamEngine, SOUND_PRESETS, type MixerChannel } from "../hooks/useJamEngine";
 import { usePresence } from "../hooks/usePresence";
 import { getSocket } from "../lib/socket";
 import { api, apiErrorMessage } from "../lib/api";
@@ -14,6 +14,7 @@ export default function Studio() {
   const { isPlaying, params, start, stop, setParams, getAnalyser, mixer, setChannelVolume, toggleChannelMute } =
     useJamEngine();
   const presence = usePresence();
+  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -94,13 +95,13 @@ export default function Studio() {
     if (!wavPreviewUrl) return;
     const a = document.createElement("a");
     a.href = wavPreviewUrl;
-    a.download = `${title || "crowdjam-jam"}.wav`;
+    a.download = `${title || "crowdstudio-jam"}.wav`;
     a.click();
   }
 
   function handleDownloadMidi() {
     const blob = buildJamMidi(params, 8);
-    downloadBlob(blob, `${title || "crowdjam-jam"}.mid`);
+    downloadBlob(blob, `${title || "crowdstudio-jam"}.mid`);
   }
 
   async function handleExport() {
@@ -140,13 +141,39 @@ export default function Studio() {
         </button>
       </div>
 
-      <div className="channel-strip mb-6 p-3">
+      {/* 1-Click Instant Sound Presets */}
+      <div className="glass-card mb-6 p-4 rounded-2xl">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-xs font-mono uppercase tracking-wider text-muted flex items-center gap-1.5 font-semibold">
+            <Zap size={14} className="text-accent" /> DAW Sound Presets
+          </span>
+          <span className="text-xs text-muted font-mono">1-click switch</span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(SOUND_PRESETS).map(([name, preset]) => (
+            <button
+              key={name}
+              onClick={() => {
+                setParams(preset);
+                setSelectedPreset(name);
+              }}
+              className={`rounded-xl px-3.5 py-2 text-xs font-semibold transition-all ${
+                selectedPreset === name
+                  ? "bg-accent text-bg shadow-glow-cyan font-bold scale-105"
+                  : "border border-white/15 bg-white/5 text-muted hover:border-accent/40 hover:text-white"
+              }`}
+            >
+              {name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="glass-card mb-6 p-3 rounded-2xl overflow-hidden">
         <AudioVisualizer getAnalyser={getAnalyser} active={isPlaying} />
       </div>
 
-      {/* Real mixing dashboard — each channel has its own volume fader and
-          mute button wired to an actual Tone.Volume node in the signal
-          chain, not just a decorative meter. */}
+      {/* Real mixing dashboard */}
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <MixerStrip
           icon={<Drum size={16} />}
@@ -191,8 +218,8 @@ export default function Studio() {
       </div>
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
-        <div className="channel-strip p-6">
-          <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-muted">Groove</h2>
+        <div className="glass-card p-6 rounded-2xl">
+          <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-muted">Groove Engine</h2>
           <Slider
             label="Tempo"
             value={params.tempo}
@@ -215,7 +242,7 @@ export default function Studio() {
             <select
               id="jam-scale"
               name="scale"
-              className="w-full rounded border border-paper/15 bg-bg/60 px-3 py-2 transition-colors focus:border-primary"
+              className="w-full rounded-xl border border-white/15 bg-bg/80 px-3.5 py-2.5 text-sm transition-colors focus:border-accent focus:outline-none"
               value={params.scale}
               onChange={(e) => setParams({ scale: e.target.value as typeof params.scale })}
             >
@@ -226,8 +253,8 @@ export default function Studio() {
           </div>
         </div>
 
-        <div className="channel-strip p-6">
-          <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-muted">Tone</h2>
+        <div className="glass-card p-6 rounded-2xl">
+          <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-muted">Filter &amp; Space</h2>
           <Slider
             label="Filter cutoff"
             value={params.filterCutoff}
@@ -237,7 +264,7 @@ export default function Studio() {
             suffix=" Hz"
           />
           <Slider
-            label="Reverb"
+            label="Reverb Space"
             value={Math.round(params.reverbWet * 100)}
             min={0}
             max={100}
@@ -247,26 +274,27 @@ export default function Studio() {
         </div>
       </div>
 
-      <div className="channel-strip mb-6 p-6">
-        <h2 className="mb-1 font-semibold">Render &amp; Export</h2>
-        <p className="mb-3 text-xs text-muted">
-          Renders 8 bars of the actual arrangement into a real, playable audio file — press play
-          right here like you would on Spotify, or drag the download into Ableton, FL Studio,
-          Logic, Reaper, or any other DAW. MIDI export is instant, editable note data instead of audio.
+      <div className="glass-card mb-6 p-6 rounded-2xl">
+        <h2 className="mb-1 font-display text-lg font-bold text-white flex items-center gap-2">
+          <Download size={18} className="text-accent" /> DAW Master Render &amp; Multi-Track Export
+        </h2>
+        <p className="mb-4 text-xs text-muted">
+          Renders 8 bars of the active generative arrangement into an uncompressed 16-bit PCM WAV file — preview directly in-browser, or import WAV/MIDI files into Ableton Live, FL Studio, Logic Pro, or any DAW.
         </p>
-        {wavError && <p className="mb-3 text-sm text-alert" role="alert">{wavError}</p>}
+        {wavError && <p className="mb-3 text-sm text-alert bg-alert/15 p-3 rounded-xl" role="alert">{wavError}</p>}
 
         <button
           onClick={handleRenderWav}
           disabled={wavRendering}
-          className="mb-3 flex w-full items-center justify-center gap-2 rounded bg-accent py-2 text-sm font-semibold text-bg shadow-glow-cyan disabled:opacity-50"
+          className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-bold text-bg shadow-glow-cyan hover:brightness-110 active:scale-98 transition-all disabled:opacity-50"
         >
-          <PlayCircle size={16} />
-          {wavRendering ? "Rendering…" : wavPreviewUrl ? "Re-render" : "Render 8 Bars"}
+          <PlayCircle size={17} />
+          {wavRendering ? "Rendering Tone.js Audio…" : wavPreviewUrl ? "Re-render Audio WAV" : "Render 8-Bar Audio WAV"}
         </button>
 
         {wavPreviewUrl && (
-          <div className="mb-3">
+          <div className="mb-4 rounded-xl bg-bg/80 border border-white/10 p-3">
+            <span className="text-[11px] font-mono text-muted uppercase tracking-wider block mb-1">In-Browser Master Preview</span>
             <audio controls src={wavPreviewUrl} className="w-full" />
           </div>
         )}
@@ -275,17 +303,17 @@ export default function Studio() {
           <button
             onClick={handleDownloadWav}
             disabled={!wavPreviewUrl}
-            className="flex flex-1 items-center justify-center gap-2 rounded border border-paper/15 py-2 text-sm transition-colors hover:border-primary disabled:opacity-40"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 py-2.5 text-sm font-semibold text-white transition-all hover:border-accent hover:text-accent hover:bg-accent/10 disabled:opacity-40"
           >
             <Download size={15} />
             Download WAV
           </button>
           <button
             onClick={handleDownloadMidi}
-            className="flex flex-1 items-center justify-center gap-2 rounded border border-paper/15 py-2 text-sm transition-colors hover:border-primary"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 py-2.5 text-sm font-semibold text-white transition-all hover:border-primary hover:text-primary hover:bg-primary/10"
           >
             <FileMusic size={15} />
-            Download MIDI
+            Download MIDI (4 Tracks)
           </button>
         </div>
       </div>
@@ -294,57 +322,58 @@ export default function Studio() {
         <ChatPanel />
       </div>
 
-      <div className="channel-strip p-6">
-        <label htmlFor="track-title" className="mb-1 block text-sm text-muted">Track title</label>
+      <div className="glass-card p-6 rounded-2xl">
+        <h2 className="mb-1 text-lg font-bold text-white">Save Jam to Global Feed</h2>
+        <p className="mb-4 text-xs text-muted">Publish your live synth arrangement to the community leaderboard for feedback and live voting.</p>
+        <label htmlFor="track-title" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-muted">Track title</label>
         <input
           id="track-title"
           name="title"
-          className="mb-3 w-full rounded border border-paper/15 bg-bg/60 px-3 py-2 transition-colors focus:border-primary"
+          className="mb-4 w-full rounded-xl border border-white/15 bg-bg/80 px-4 py-2.5 text-sm text-white transition-colors focus:border-accent focus:outline-none"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="My late-night jam"
+          placeholder="e.g. Midnight Cyber Synthwave"
           maxLength={100}
         />
-        {saveError && <p className="mb-3 text-sm text-alert" role="alert">{saveError}</p>}
+        {saveError && <p className="mb-3 text-sm text-alert bg-alert/15 p-3 rounded-xl" role="alert">{saveError}</p>}
         <button
           onClick={handleSave}
           disabled={saveState === "saving"}
-          className="flex w-full items-center justify-center gap-2 rounded border border-primary py-2 text-primary transition-colors hover:bg-primary/10 disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary via-neon to-accent py-3 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-98 disabled:opacity-50 shadow-glow"
         >
           <Save size={16} />
-          {saveState === "saving" ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save to feed"}
+          {saveState === "saving" ? "Saving Track…" : saveState === "saved" ? "Saved to Feed ✓" : "Publish to Community Feed"}
         </button>
       </div>
 
       {savedTrackId && (
-        <div className="channel-strip mt-6 p-6">
-          <h2 className="mb-1 flex items-center gap-2 font-semibold">
-            <Sparkles size={16} className="text-accent" /> AI Export
+        <div className="glass-card mt-6 p-6 rounded-2xl">
+          <h2 className="mb-1 flex items-center gap-2 font-display text-lg font-bold text-white">
+            <Sparkles size={18} className="text-neon" /> AI Cloud Model Export
           </h2>
           <p className="mb-3 text-xs text-muted">
-            Renders this jam into a downloadable track via an external AI provider. Only works if
-            the server has a provider configured — otherwise you'll get a clear error, not a fake result.
+            Renders this jam into an AI audio master track using configured cloud provider models.
           </p>
           <label htmlFor="export-prompt" className="sr-only">Describe the vibe for AI export</label>
           <input
             id="export-prompt"
             name="exportPrompt"
-            className="mb-3 w-full rounded border border-paper/15 bg-bg/60 px-3 py-2 text-sm transition-colors focus:border-primary"
-            placeholder="Describe the vibe you want, e.g. 'dreamy lo-fi with soft vocals'"
+            className="mb-3 w-full rounded-xl border border-white/15 bg-bg/80 px-4 py-2.5 text-sm text-white transition-colors focus:border-neon focus:outline-none"
+            placeholder="Describe the vibe, e.g. 'dreamy lo-fi with tape saturation and vinyl crackle'"
             maxLength={500}
             value={exportPrompt}
             onChange={(e) => setExportPrompt(e.target.value)}
           />
-          {exportError && <p className="mb-3 text-sm text-alert" role="alert">{exportError}</p>}
+          {exportError && <p className="mb-3 text-sm text-alert bg-alert/15 p-3 rounded-xl" role="alert">{exportError}</p>}
           {exportState === "done" && exportUrl && (
             <audio controls src={exportUrl} className="mb-3 w-full" />
           )}
           <button
             onClick={handleExport}
             disabled={exportState === "exporting" || !exportPrompt.trim()}
-            className="w-full rounded bg-accent py-2 text-sm font-semibold text-bg disabled:opacity-50"
+            className="w-full rounded-xl bg-neon py-3 text-sm font-bold text-white transition-all hover:brightness-110 disabled:opacity-50 shadow-glow"
           >
-            {exportState === "exporting" ? "Rendering…" : "Export with AI"}
+            {exportState === "exporting" ? "Rendering AI Track…" : "Render with AI"}
           </button>
         </div>
       )}
@@ -373,10 +402,10 @@ function MixerStrip({
 }) {
   const isAudible = active && !muted;
   return (
-    <div className="channel-strip flex flex-col items-center gap-2 py-4">
-      <span className={isAudible ? "text-primary" : "text-muted"}>{icon}</span>
+    <div className="glass-card flex flex-col items-center gap-3 p-4 rounded-2xl transition-all hover:border-accent/40">
+      <span className={isAudible ? "text-accent" : "text-muted"}>{icon}</span>
       <VUMeter active={isAudible} bars={5} />
-      <span className="font-mono text-xs text-muted">{label}</span>
+      <span className="font-mono text-xs font-semibold uppercase tracking-wider text-paper">{label}</span>
       <label htmlFor={`vol-${channel}`} className="sr-only">{label} volume</label>
       <input
         id={`vol-${channel}`}
@@ -387,14 +416,24 @@ function MixerStrip({
         value={db}
         disabled={muted}
         onChange={(e) => onVolumeChange(channel, Number(e.target.value))}
-        className="w-full accent-primary disabled:opacity-30"
+        className="w-full accent-accent disabled:opacity-30"
       />
+      <div className="flex items-center justify-between w-full text-[10px] font-mono text-muted px-1">
+        <span>-40dB</span>
+        <span className={isAudible ? "text-accent font-semibold" : "text-muted"}>{db}dB</span>
+        <span>0dB</span>
+      </div>
       <button
         onClick={() => onToggleMute(channel)}
         title={muted ? `Unmute ${label}` : `Mute ${label}`}
-        className={`rounded p-1 transition-colors ${muted ? "text-alert" : "text-muted hover:text-primary"}`}
+        className={`flex items-center gap-1.5 w-full justify-center rounded-xl py-1.5 text-xs font-bold transition-all ${
+          muted
+            ? "bg-alert/20 text-alert border border-alert/40 shadow-sm"
+            : "bg-white/5 text-muted border border-white/10 hover:text-accent hover:border-accent"
+        }`}
       >
         {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+        <span>{muted ? "MUTED" : "MUTE"}</span>
       </button>
     </div>
   );
@@ -419,9 +458,9 @@ function Slider({
 }) {
   return (
     <div className="mb-4">
-      <div className="mb-1 flex justify-between text-sm text-muted">
-        <span>{label}</span>
-        <span className="font-mono text-primary">
+      <div className="mb-1.5 flex justify-between text-sm text-muted">
+        <span className="font-semibold text-paper/90">{label}</span>
+        <span className="font-mono font-bold text-accent">
           {value}
           {suffix}
         </span>
@@ -436,9 +475,9 @@ function Slider({
           onChange(v);
           getSocket().emit("jam-param-change", { param: label, value: v });
         }}
-        className="w-full accent-primary"
+        className="w-full accent-accent"
       />
-      {hint && <p className="mt-0.5 text-xs text-muted/70">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-muted/70 font-mono">{hint}</p>}
     </div>
   );
 }

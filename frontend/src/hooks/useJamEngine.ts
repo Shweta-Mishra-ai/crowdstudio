@@ -36,6 +36,14 @@ export const DEFAULT_JAM_PARAMS: JamParams = {
   energy: 0.6,
 };
 
+export const SOUND_PRESETS: Record<string, Partial<JamParams>> = {
+  "Lo-Fi Sunset": { scale: "minor", rootNote: "D3", tempo: 82, filterCutoff: 1400, reverbWet: 0.55, energy: 0.50 },
+  "Synthwave Pulse": { scale: "minor", rootNote: "A2", tempo: 118, filterCutoff: 3800, reverbWet: 0.40, energy: 0.85 },
+  "Funk Groove": { scale: "major", rootNote: "G2", tempo: 105, filterCutoff: 2600, reverbWet: 0.20, energy: 0.75 },
+  "Ambient Drift": { scale: "pentatonic", rootNote: "C3", tempo: 75, filterCutoff: 900, reverbWet: 0.70, energy: 0.35 },
+  "Cyber EDM": { scale: "minor", rootNote: "F2", tempo: 128, filterCutoff: 4500, reverbWet: 0.30, energy: 0.95 },
+};
+
 export type MixerChannel = "drums" | "bass" | "pads" | "lead";
 
 export interface MixerState {
@@ -74,7 +82,7 @@ interface EngineNodes {
   pad: Tone.PolySynth;
   lead: Tone.PolySynth;
   masterFilter: Tone.Filter;
-  reverb: Tone.Reverb;
+  reverb: Tone.Freeverb;
   delay: Tone.FeedbackDelay;
   compressor: Tone.Compressor;
   analyser: Tone.Analyser;
@@ -130,7 +138,7 @@ export function useJamEngine() {
     const analyser = new Tone.Analyser("waveform", 256);
     compressor.connect(analyser);
     const masterFilter = new Tone.Filter(params.filterCutoff, "lowpass").connect(compressor);
-    const reverb = new Tone.Reverb({ decay: 3.2, wet: params.reverbWet }).connect(masterFilter);
+    const reverb = new Tone.Freeverb({ roomSize: 0.7, dampening: 3000, wet: params.reverbWet }).connect(masterFilter);
     const delay = new Tone.FeedbackDelay({ delayTime: "8n", feedback: 0.25, wet: 0.18 }).connect(reverb);
 
     const drumBus = new Tone.Filter(8000, "lowpass");

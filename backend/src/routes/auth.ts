@@ -101,7 +101,7 @@ router.post("/guest", async (_req, res) => {
   for (let attempt = 0; attempt < 5; attempt++) {
     const id = crypto.randomBytes(5).toString("hex");
     const username = `guest_${id}`;
-    const email = `${username}@guest.crowdjam.local`;
+    const email = `${username}@guest.crowdstudio.local`;
     try {
       const passwordHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), 10);
       const user = await prisma.user.create({

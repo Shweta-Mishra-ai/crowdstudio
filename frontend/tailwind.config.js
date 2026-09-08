@@ -4,17 +4,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Neon AI-music-app palette — deep near-black base with electric
-        // purple/pink/cyan accents, the same visual language Suno/Udio/
-        // ElevenLabs use, instead of the earlier warm analog-console look.
-        bg: "#0A0A12",        // near-black, slight indigo tint
-        surface: "#141220",   // panel
-        panel: "#1B1830",     // channel strip
-        primary: "#B24BFF",   // electric purple/magenta — main accent
-        accent: "#00E5FF",    // electric cyan — "live" states, secondary accent
-        alert: "#FF3B5C",     // neon red — errors only
-        paper: "#F4F1FF",     // primary text (very light violet-white)
-        muted: "#9490B8",     // secondary text, cool violet-gray
+        bg: "#050508",        // Pure Pitch Black
+        surface: "#0D0D14",   // Deep Obsidian Card
+        panel: "#14141F",     // Sleek Studio Console Strip
+        primary: "#BD00FF",   // Electric Neon Magenta Accent
+        accent: "#00F2FE",    // Electric Neon Cyan Accent
+        neon: "#BD00FF",      // Electric Neon Magenta
+        amber: "#FFAB00",     // Warm Studio Amber
+        alert: "#FF3B30",     // Bright Red Alert
+        paper: "#FFFFFF",     // Pure Crisp White
+        muted: "#8E8EA8",     // Sleek Slate Gray
       },
       fontFamily: {
         display: ["Space Grotesk", "sans-serif"],
@@ -22,11 +21,14 @@ export default {
         mono: ["IBM Plex Mono", "monospace"],
       },
       boxShadow: {
-        glow: "0 0 20px rgba(178, 75, 255, 0.35), 0 0 4px rgba(178, 75, 255, 0.6)",
-        "glow-cyan": "0 0 20px rgba(0, 229, 255, 0.35), 0 0 4px rgba(0, 229, 255, 0.6)",
+        glow: "0 0 25px rgba(189, 0, 255, 0.35), 0 0 5px rgba(189, 0, 255, 0.7)",
+        "glow-cyan": "0 0 25px rgba(0, 242, 254, 0.4), 0 0 5px rgba(0, 242, 254, 0.8)",
+        amberGlow: "0 0 25px rgba(255, 171, 0, 0.4)",
+        glass: "0 10px 40px 0 rgba(0, 0, 0, 0.8)",
       },
       backgroundImage: {
-        "neon-gradient": "linear-gradient(135deg, #FF3EC9 0%, #B24BFF 50%, #00E5FF 100%)",
+        "neon-gradient": "linear-gradient(135deg, #00F2FE 0%, #BD00FF 50%, #FF3EC9 100%)",
+        "accent-gradient": "linear-gradient(135deg, #00F2FE 0%, #BD00FF 100%)",
       },
     },
   },

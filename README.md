@@ -1,33 +1,35 @@
-# CrowdJam
+# CrowdStudio
 
-A real-time collaborative music jamming platform — built from scratch, combining
-the working ideas from two earlier prototypes (CrowdStudio's social/backend
-model + Present Mind Sound's generative audio engine) while fixing every bug
-found in both during audit.
+<p align="center">
+  <img src="docs/logo.svg" alt="CrowdStudio Logo" width="100%" />
+</p>
 
-## Stack
+A high-performance real-time collaborative generative audio engine, DAW export studio, and music community platform — styled in a modern Dark Cessa pitch-black obsidian aesthetic.
 
-- **Frontend**: Vite + React + TypeScript + Tailwind, `zustand` for state, `tone.js` for live audio
-- **Backend**: Express + TypeScript + Prisma + PostgreSQL, `socket.io` for real-time
-- **Auth**: JWT, bcrypt password hashing
+## Tech Stack
 
-## Features (all real, no fakes)
+- **Frontend**: Vite + React 18 + TypeScript + Tailwind CSS (Dark Cessa UI theme, IBM Plex Mono & Space Grotesk typography)
+- **Audio Engine**: `tone.js` (Web Audio API synthesis, `Tone.Freeverb`, offline WAV rendering), `midi-writer-js` (multi-track MIDI export)
+- **Backend**: Express + TypeScript + Prisma ORM + PostgreSQL + `socket.io`
+- **Auth**: JWT, bcrypt, 1-Click Instant Demo Login, custom email/password registration, and frictionless guest bootstrap
 
-| Feature | Status |
+## Features
+
+| Feature | Description |
 |---|---|
-| Auth | No login wall — every visitor gets an automatic guest identity (real, DB-backed) |
-| Live Jam Studio | Real Tone.js synthesis — tempo, filter, reverb, scale, all audible |
-| Save jam as track | Real DB write, shows up in global feed |
-| Global feed | Real, paginated, DB-backed |
-| Likes / comments | Real, DB-backed, per-user |
-| Leaderboard | Real, DB-backed, time-decayed "hot" ranking — **not** raw like count (old bug) |
-| Online presence ("X jamming now") | Real WebSocket count — **not** a hardcoded random number (old bug) |
-| Live param sync between users | Real, via socket.io broadcast |
-| Jam room live chat | Real, jam-room-scoped (Socket.io rooms), rate-limited, 50-message history |
-| Live audience voting (🔥/🎶) | Real, per-track WebSocket room, live "who's winning" bar |
-| Per-instrument mixer | Real Tone.Volume nodes per channel — drums/bass/pads/lead each have a live volume fader + mute |
-| Export to DAW (WAV + MIDI) | Real files — offline-rendered WAV audio + editable MIDI note data, importable into any DAW |
-| AI export | Calls a real configured provider API, or returns a clear "not configured" error — never fakes a result |
+| **Dark Cessa UI** | Pitch-black obsidian console (`#050508`), frosted glass cards (`.glass-card`), tactile hardware range sliders with cyan-magenta glowing knobs |
+| **Authentication & Demo** | 1-Click Instant Demo Login, custom Registration/Login, plus automatic guest identity bootstrap (zero friction) |
+| **Generative Jam Engine** | Real multi-part generative arrangement (drums, bass, diatonic chord pads, lead arpeggios) with Energy & Groove controls |
+| **DAW Sound Presets** | 1-Click instant groove switching (Lo-Fi Sunset, Synthwave Pulse, Funk Groove, Ambient Drift, Cyber EDM) |
+| **Hardware Mixer Console** | Live volume faders (-40dB to 0dB) and mute toggles per instrument (Drums, Bass, Pads, Lead) with real-time VU meters |
+| **Real DAW Export** | Download 16-bit PCM WAV (offline Tone.js render) & multi-track MIDI (.mid) files importable directly into Ableton, FL Studio, Logic, Reaper |
+| **In-Browser Audio Player** | Render and preview WAV audio directly in Studio and TrackDetail with full playback controls |
+| **Real Spotify Integration** | Paste any Spotify track link to pull Open Graph artist metadata, embed official Spotify iframe player, and rank alongside AI jams |
+| **Time-Decayed Hot Leaderboard** | Score-decayed trending algorithm (`hotScore`) factoring in likes, plays, and recency |
+| **Live Audience Voting** | Per-track WebSocket rooms with real-time reaction counts (🔥 / 🎵) and live dynamic winning meter |
+| **Jam Room Chat** | Rate-limited live socket chat with persistent history |
+| **Play Count Tracking** | Database-backed track play counts incrementing on audio synthesis and playback |
+| **Inline Profile Editing** | Producers can update their display name, bio, and review their track catalog |
 
 ## Local setup
 

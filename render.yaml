@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: crowdjam-backend
+    name: crowdstudio-backend
     env: node
     plan: free
     rootDir: backend
@@ -27,16 +27,14 @@ services:
       - key: AI_EXPORT_ENDPOINT
         sync: false
 
-  # NOTE: the old crowdstudio render.yaml only defined the backend service —
-  # the frontend was never actually deployed by this config. Fixed here.
   - type: web
-    name: crowdjam-frontend
+    name: crowdstudio-frontend
     env: static
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     envVars:
-      # Set to the real deployed backend URL (e.g. https://crowdjam-backend.onrender.com)
+      # Set to the real deployed backend URL (e.g. https://crowdstudio-backend.onrender.com)
       - key: VITE_API_BASE
         sync: false
     routes:
@@ -45,7 +43,7 @@ services:
         destination: /index.html
 
 databases:
-  - name: crowdjam-db
+  - name: crowdstudio-db
     plan: free
-    databaseName: crowdjam
-    user: crowdjam
+    databaseName: crowdstudio
+    user: crowdstudio

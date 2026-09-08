@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 240" width="100%" height="100%">
+  <defs>
+    <!-- Dark Console Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14100E"/>
+      <stop offset="50%" stop-color="#1C1815"/>
+      <stop offset="100%" stop-color="#26201B"/>
+    </linearGradient>
+
+    <!-- Vibrant Neon Accent Gradients -->
+    <linearGradient id="primaryAmber" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFB347"/>
+      <stop offset="100%" stop-color="#E8A33D"/>
+    </linearGradient>
+
+    <linearGradient id="liveTeal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F2FE"/>
+      <stop offset="100%" stop-color="#4FB8A6"/>
+    </linearGradient>
+
+    <linearGradient id="magentaPulse" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF0844"/>
+      <stop offset="100%" stop-color="#FFB199"/>
+    </linearGradient>
+
+    <linearGradient id="goldGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFE000"/>
+      <stop offset="100%" stop-color="#799F0C"/>
+    </linearGradient>
+
+    <!-- Glow Filters -->
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background Card -->
+  <rect width="800" height="240" rx="20" fill="url(#bgGrad)" stroke="#3A3027" stroke-width="2" filter="url(#softShadow)"/>
+
+  <!-- Subtle Equalizer Grid Lines -->
+  <line x1="50" y1="180" x2="750" y2="180" stroke="#3A3027" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="50" y1="120" x2="750" y2="120" stroke="#3A3027" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="50" y1="60" x2="750" y2="60" stroke="#3A3027" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- Logo Mark Group (Vibrant Radio Waveform & DAW Equalizer) -->
+  <g transform="translate(60, 40)" filter="url(#neonGlow)">
+    <!-- Outer Arc -->
+    <circle cx="80" cy="80" r="70" fill="none" stroke="url(#liveTeal)" stroke-width="3" stroke-dasharray="8 6" opacity="0.8"/>
+    <!-- Inner Ring -->
+    <circle cx="80" cy="80" r="54" fill="none" stroke="url(#primaryAmber)" stroke-width="2"/>
+
+    <!-- Equalizer Bars -->
+    <rect x="36" y="70" width="8" height="20" rx="4" fill="url(#liveTeal)"/>
+    <rect x="48" y="50" width="8" height="60" rx="4" fill="url(#primaryAmber)"/>
+    <rect x="60" y="30" width="8" height="100" rx="4" fill="url(#magentaPulse)"/>
+    <rect x="72" y="45" width="8" height="70" rx="4" fill="url(#primaryAmber)"/>
+    <rect x="84" y="25" width="8" height="110" rx="4" fill="url(#liveTeal)"/>
+    <rect x="96" y="55" width="8" height="50" rx="4" fill="url(#magentaPulse)"/>
+    <rect x="108" y="65" width="8" height="30" rx="4" fill="url(#primaryAmber)"/>
+    <rect x="120" y="75" width="8" height="10" rx="4" fill="url(#liveTeal)"/>
+  </g>
+
+  <!-- Brand Typography -->
+  <g transform="translate(250, 130)">
+    <!-- Text Shadow -->
+    <text x="0" y="0" font-family="'Space Grotesk', 'Inter', 'Segoe UI', sans-serif" font-weight="800" font-size="64" fill="#000000" opacity="0.5" dx="2" dy="4">CrowdStudio</text>
+    
+    <!-- Main Gradient Text -->
+    <text x="0" y="0" font-family="'Space Grotesk', 'Inter', 'Segoe UI', sans-serif" font-weight="800" font-size="64" fill="url(#primaryAmber)" letter-spacing="-1">Crowd<tspan fill="url(#liveTeal)">Studio</tspan></text>
+  </g>
+
+  <!-- Tagline / Subtitle -->
+  <g transform="translate(254, 168)">
+    <text x="0" y="0" font-family="'IBM Plex Mono', monospace" font-size="16" fill="#9C9284" letter-spacing="3">REAL-TIME COLLABORATIVE MUSIC DAW</text>
+  </g>
+
+  <!-- Live Status Badge in Corner -->
+  <g transform="translate(640, 35)">
+    <rect width="110" height="28" rx="14" fill="#14100E" stroke="url(#liveTeal)" stroke-width="1.5"/>
+    <circle cx="18" cy="14" r="5" fill="#00F2FE" filter="url(#neonGlow)"/>
+    <text x="32" y="19" font-family="'IBM Plex Sans', sans-serif" font-weight="600" font-size="12" fill="#4FB8A6">LIVE 60FPS</text>
+  </g>
+</svg>

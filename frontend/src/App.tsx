@@ -8,6 +8,8 @@ import Studio from "./pages/Studio";
 import Leaderboard from "./pages/Leaderboard";
 import TrackDetail from "./pages/TrackDetail";
 import Profile from "./pages/Profile";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 
 export default function App() {
@@ -46,6 +48,8 @@ export default function App() {
           <Route path="/tracks/:id" element={<TrackDetail />} />
           <Route path="/profile/:username" element={<Profile />} />
           <Route path="/studio" element={<Studio />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AppShell>

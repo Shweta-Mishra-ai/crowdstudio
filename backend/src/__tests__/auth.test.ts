@@ -122,7 +122,7 @@ describe("POST /auth/guest", () => {
   it("creates a passwordless guest account and returns a usable token", async () => {
     mockPrisma.user.create.mockResolvedValue({
       id: "g1",
-      email: "guest_abc123@guest.crowdjam.local",
+      email: "guest_abc123@guest.crowdstudio.local",
       username: "guest_abc123",
       displayName: "Guest",
     });
@@ -136,7 +136,7 @@ describe("POST /auth/guest", () => {
   it("requires no request body at all", async () => {
     mockPrisma.user.create.mockResolvedValue({
       id: "g2",
-      email: "guest_xyz@guest.crowdjam.local",
+      email: "guest_xyz@guest.crowdstudio.local",
       username: "guest_xyz",
       displayName: "Guest",
     });
