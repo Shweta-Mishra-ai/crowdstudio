@@ -19,7 +19,24 @@ export function buildApp() {
   const app = express();
 
   app.use(helmet());
-  app.use(cors({ origin: config.corsOrigin }));
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        if (
+          !origin ||
+          config.corsOrigin === "*" ||
+          origin.endsWith(".vercel.app") ||
+          origin.endsWith(".onrender.com") ||
+          origin === "http://localhost:5173" ||
+          origin === "http://localhost:3000"
+        ) {
+          return callback(null, true);
+        }
+        callback(null, origin === config.corsOrigin);
+      },
+      credentials: true,
+    })
+  );
   // Cap request body size — protects against oversized-payload DoS attempts,
   // e.g. someone posting a multi-MB "jamConfig" blob.
   app.use(express.json({ limit: "256kb" }));

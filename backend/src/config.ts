@@ -14,13 +14,13 @@ function required(name: string, fallback?: string): string {
 export const config = {
   port: Number(process.env.PORT ?? 4000),
   nodeEnv: process.env.NODE_ENV ?? "development",
-  jwtSecret: required("JWT_SECRET"),
+  jwtSecret: process.env.JWT_SECRET || (process.env.NODE_ENV === "production" ? required("JWT_SECRET") : "dev-jwt-secret-crowdstudio-2026"),
   // Typed as SignOptions["expiresIn"] (not plain string) — jsonwebtoken's
   // types only accept a number of seconds or a specific "Xd"/"Xh" style
   // literal, and a loose `string` fails to satisfy jwt.sign's overloads.
   jwtExpiry: (process.env.JWT_EXPIRY ?? "7d") as SignOptions["expiresIn"],
-  corsOrigin: process.env.CORS_ORIGIN ?? "http://localhost:5173",
-  databaseUrl: required("DATABASE_URL"),
+  corsOrigin: process.env.CORS_ORIGIN ?? "*",
+  databaseUrl: process.env.DATABASE_URL || (process.env.NODE_ENV === "production" ? required("DATABASE_URL") : "postgresql://crowdstudio:crowdstudio@localhost:5432/crowdstudio"),
   // Optional: only set if the user wants real paid AI export.
   // When absent, the export route returns a clear "not configured" error
   // instead of faking a result.

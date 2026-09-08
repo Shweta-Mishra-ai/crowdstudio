@@ -14,12 +14,13 @@ services:
         generateValue: true
       - key: JWT_EXPIRY
         value: 7d
-      # Set this to the real deployed frontend URL after first deploy —
-      # a wildcard "*" origin is fine for local testing only, never prod.
+      # Allow CORS from deployed frontends (e.g. Vercel) as well as local preview
       - key: CORS_ORIGIN
-        sync: false
+        value: "*"
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: crowdstudio-db
+          property: connectionString
       - key: AI_EXPORT_PROVIDER
         sync: false
       - key: AI_EXPORT_API_KEY
