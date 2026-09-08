@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../db";
 import { requireAuth, optionalAuth, AuthedRequest } from "../middleware/auth";
+import { writeLimiter } from "../middleware/rateLimit";
 import { hotScore } from "../lib/ranking";
 
 const router = Router();
@@ -113,7 +114,7 @@ router.get("/leaderboard", async (_req, res) => {
   });
 });
 
-router.post("/", requireAuth, async (req: AuthedRequest, res) => {
+router.post("/", requireAuth, writeLimiter, async (req: AuthedRequest, res) => {
   const parsed = createTrackSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Invalid track data" });
@@ -174,7 +175,7 @@ router.post("/:id/play", async (req, res) => {
   return res.json({ playCount: track.playCount });
 });
 
-router.post("/:id/like", requireAuth, async (req: AuthedRequest, res) => {
+router.post("/:id/like", requireAuth, writeLimiter, async (req: AuthedRequest, res) => {
   const trackId = req.params.id;
   const existing = await prisma.like.findUnique({
     where: { userId_trackId: { userId: req.userId!, trackId } },
@@ -197,7 +198,7 @@ router.post("/:id/like", requireAuth, async (req: AuthedRequest, res) => {
 
 const commentSchema = z.object({ body: z.string().min(1).max(500) });
 
-router.post("/:id/comments", requireAuth, async (req: AuthedRequest, res) => {
+router.post("/:id/comments", requireAuth, writeLimiter, async (req: AuthedRequest, res) => {
   const parsed = commentSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: "Comment cannot be empty" });

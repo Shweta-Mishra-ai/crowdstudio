@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../db";
 import { requireAuth, AuthedRequest } from "../middleware/auth";
+import { writeLimiter } from "../middleware/rateLimit";
 
 const router = Router();
 
@@ -55,7 +56,7 @@ const updateProfileSchema = z.object({
   bio: z.string().max(280).optional(),
 });
 
-router.patch("/me", requireAuth, async (req: AuthedRequest, res) => {
+router.patch("/me", requireAuth, writeLimiter, async (req: AuthedRequest, res) => {
   const parsed = updateProfileSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Invalid input" });

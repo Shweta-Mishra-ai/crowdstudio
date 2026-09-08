@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "../db";
 import { config } from "../config";
 import { requireAuth, AuthedRequest } from "../middleware/auth";
+import { writeLimiter } from "../middleware/rateLimit";
 
 const router = Router();
 
@@ -18,7 +19,7 @@ const exportSchema = z.object({
  * crowdstudio behavior of silently returning a random stock mp3. We never
  * fake the output here.
  */
-router.post("/:trackId/export", requireAuth, async (req: AuthedRequest, res) => {
+router.post("/:trackId/export", requireAuth, writeLimiter, async (req: AuthedRequest, res) => {
   if (!config.aiExportApiKey || !config.aiExportProvider) {
     return res.status(501).json({
       error: "AI export is not configured on this server. Set AI_EXPORT_API_KEY and AI_EXPORT_PROVIDER.",

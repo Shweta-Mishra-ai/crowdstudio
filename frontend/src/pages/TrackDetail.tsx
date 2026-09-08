@@ -56,6 +56,12 @@ export default function TrackDetail() {
       .then(([trackRes, commentsRes]) => {
         setTrack(trackRes.data.track);
         setComments(commentsRes.data.comments);
+        // Record play count on backend asynchronously
+        api.post(`/tracks/${id}/play`)
+          .then(({ data }) => {
+            setTrack((prev) => (prev ? { ...prev, playCount: data.playCount } : null));
+          })
+          .catch(() => {});
       })
       .catch((err) => setError(apiErrorMessage(err, "Could not load this track")))
       .finally(() => setLoading(false));
